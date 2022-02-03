@@ -16,7 +16,7 @@ val setAngle = 0
 
 open class ShootCommand : FalconCommand(Shooter) {
     override fun execute() {
-        encoderVal.setDouble(Shooter.angleEncoderPosition.value)
+        encoderVal.setDouble(Shooter.angleEncoder.position.value)
 //        Shooter.setAngle(SIUnit(1.0))
     }
 

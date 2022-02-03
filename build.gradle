@@ -75,9 +75,9 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-std-lib:1.16.10"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "com.github.MTHSRoboticsClub:freezylib:-SNAPSHOT"
-    implementation 'com.github.gamingnight5965:FalconLibrary:2022.1.1'
+    implementation 'com.github.gamingnight5965:FalconLibrary:2022.1.17'
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()

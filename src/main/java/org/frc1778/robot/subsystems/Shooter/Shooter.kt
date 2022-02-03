@@ -8,10 +8,11 @@ import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnit
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
+import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.ctre.falconFX
 
 object Shooter : FalconSubsystem() {
-    private val rotationModel = NativeUnitRotationModel(SIUnit<NativeUnit>(6.0))
+    private val rotationModel = NativeUnitRotationModel(2048.nativeUnits)
 
     private val flywheelMotor = falconFX(Constants.Shooter.SHOOTER_FLYWHEEL, DefaultNativeUnitModel) {
         brakeMode = true
@@ -22,8 +23,7 @@ object Shooter : FalconSubsystem() {
         outputInverted = false
     }
 
-    val angleEncoderPosition
-        get() = angleAdjuster.encoder.position
+    val angleEncoder = angleAdjuster.encoder
 
     fun runShooter(percent: Double) {
         flywheelMotor.setDutyCycle(percent)
