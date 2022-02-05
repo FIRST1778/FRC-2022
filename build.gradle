@@ -3,7 +3,7 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 plugins {
     id "java"
     id "org.jetbrains.kotlin.jvm" version "1.6.10"
-    id "edu.wpi.first.GradleRIO" version "2022.2.1"
+    id "edu.wpi.first.GradleRIO" version "2022.3.1"
 
     id "idea"
     id "maven-publish"
@@ -75,9 +75,9 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
     implementation "com.github.MTHSRoboticsClub:freezylib:-SNAPSHOT"
-    implementation 'com.github.gamingnight5965:FalconLibrary:2022.1.17'
+    implementation 'com.github.gamingnight5965:FalconLibrary:2022.2.2'
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
