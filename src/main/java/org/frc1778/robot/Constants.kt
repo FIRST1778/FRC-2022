@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
+import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 
 object Constants {
@@ -23,5 +24,21 @@ object Constants {
     object Shooter {
         const val SHOOTER_FLYWHEEL = 0
         const val ANGLE_ADJUSTMENT = 21
+        val NATIVE_ROTATION_MODEL = NativeUnitRotationModel(2048.nativeUnits)
+    }
+
+    object Loader {
+        const val MAIN_WHEEL = 0
+        const val LOADER_WHEEL = 0
+    }
+
+    object Collector {
+        const val LEFT_MINI_MASTER = 0
+        const val RIGHT_MINI_SLAVE = 0
+        const val DEPLOY_MOTOR = 0
+    }
+
+    object Climber {
+        const val CLIMBER_MOTOR = 0
     }
 }

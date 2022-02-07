@@ -1,9 +1,8 @@
 package org.frc1778.robot
 
-import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import org.frc1778.robot.subsystems.Shooter.Shooter
+import org.frc1778.robot.subsystems.shooter.Shooter
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 
 /**

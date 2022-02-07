@@ -1,4 +1,5 @@
-@file:JvmName("Main") // set the compiled Java class name to "Main" rather than "MainKt"
+@file:JvmName("Main")
+// set the compiled Java class name to "Main" rather than "MainKt"
 package org.frc1778.robot
 
 import edu.wpi.first.wpilibj.RobotBase
