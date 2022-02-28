@@ -53,16 +53,15 @@ private val angleAdjuster = falconFX(Constants.Shooter.ANGLE_ADJUSTMENT, NATIVE_
         nativeUnitsVal.setDouble(NATIVE_ROTATION_MODEL.toNativeUnitPosition(angle).value)
         angleValue.setDouble(angle.value)
         angleAdjuster.setPosition(angle)
-//        angleAdjuster.motorController.set(ControlMode.Position, NATIVE_ROTATION_MODEL.toNativeUnitPosition(angle).value)
     }
 
     init {
 //        angleEncoder.resetPosition(0.radians)
         defaultCommand = ShootCommand()
 
-        angleAdjuster.motorController.config_kD(0, 10.0, 30)
+        angleAdjuster.motorController.config_kF(0, 0.075, 30)
         angleAdjuster.motorController.config_kP(0, .85, 30)
         angleAdjuster.motorController.config_kI(0,0.0,30)
-        angleAdjuster.motorController.config_kF(0, 0.075, 30)
+        angleAdjuster.motorController.config_kD(0, 10.0, 30)
     }
 }

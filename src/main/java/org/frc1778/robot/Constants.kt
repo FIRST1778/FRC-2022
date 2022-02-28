@@ -30,6 +30,7 @@ object Constants {
     object Loader {
         const val MAIN_WHEEL = 0
         const val LOADER_WHEEL = 0
+        const val INTERMEDIATE_WHEEL = 0
     }
 
     object Collector {
@@ -40,5 +41,8 @@ object Constants {
 
     object Climber {
         const val CLIMBER_MOTOR = 0
+
+        //TODO: Find native units per rotation for absolute encoder
+        val NATIVE_ROTATION_MODEL = NativeUnitRotationModel(0.nativeUnits)
     }
 }

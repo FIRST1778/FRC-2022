@@ -6,6 +6,7 @@ import org.frc1778.robot.Constants
 import org.frc1778.robot.subsystems.collector.commands.CollectorCommands
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
+import org.ghrobotics.lib.motors.ctre.falconFX
 import org.ghrobotics.lib.motors.rev.falconMAX
 
 object Collector : FalconSubsystem() {
@@ -14,14 +15,14 @@ object Collector : FalconSubsystem() {
         outputInverted = false
     }
 
-    private val deployMotor = falconMAX(Constants.Collector.DEPLOY_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless, DefaultNativeUnitModel) {
+    private val deployMotor = falconFX(Constants.Collector.DEPLOY_MOTOR, DefaultNativeUnitModel) {
         brakeMode = true
         outputInverted = false
     }
 
     fun runCollector(percent: Double) = miniLeftMaster.setDutyCycle(percent)
 
-//    FIXME: idk how this is gonna work rn
+
     fun deployCollector() {
 
     }
@@ -32,6 +33,12 @@ object Collector : FalconSubsystem() {
             outputInverted = false
             follow(miniLeftMaster)
         }
+
+        deployMotor.motorController.config_kF(0, 0.0, 30)
+        deployMotor.motorController.config_kP(0, 0.0, 30)
+        deployMotor.motorController.config_kI(0, 0.0, 30)
+        deployMotor.motorController.config_kD(0, 0.0, 30)
+
 
         defaultCommand = CollectorCommands()
     }
