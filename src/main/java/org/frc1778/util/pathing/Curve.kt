@@ -1,13 +1,12 @@
 package org.frc1778.util.pathing
 
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 
-class Curve(private val x: Double, private val y: Double, endAngle: SIUnit<Radian>) {
+class Curve(private val x: Double, private val y: Double, endAngle: SIUnit<Radian>): PathSegment() {
     private var points: ArrayList<Pair<Double, Double>> = ArrayList()
     private var lines: ArrayList<Line> = ArrayList()
 
@@ -29,6 +28,10 @@ class Curve(private val x: Double, private val y: Double, endAngle: SIUnit<Radia
             val (x2, y2) = points[i + 1]
             lines.add(Line(x1, y1, x2, y2))
         }
+    }
+
+    override fun execute() {
+        TODO("Not yet implemented")
     }
 
 }
