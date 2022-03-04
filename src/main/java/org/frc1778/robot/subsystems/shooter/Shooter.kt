@@ -8,20 +8,17 @@ import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
-import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
-import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.ctre.falconFX
 
 object Shooter : FalconSubsystem() {
 
-    val angleValue= Constants.debugTab2
+    private val angleValue = Constants.debugTab2
         .add("Angle",0)
         .withWidget(BuiltInWidgets.kTextView)
         .withPosition(1, 0)
         .withSize(1,1)
         .entry
 
-    private val rotationModel = NativeUnitRotationModel(2048.nativeUnits)
 
     private val flywheelMotor = falconFX(Constants.Shooter.SHOOTER_FLYWHEEL, NATIVE_ROTATION_MODEL) {
         brakeMode = true
@@ -54,7 +51,7 @@ object Shooter : FalconSubsystem() {
 
     //TODO: !!! GET VALUES FOR SHOOTER !!!
     fun getSetPositions(distance: Double): Pair<Double, SIUnit<Radian>> {
-        return Pair(0.0, SIUnit<Radian>(0.0))
+        return Pair(0.0, SIUnit(0.0))
     }
 
 

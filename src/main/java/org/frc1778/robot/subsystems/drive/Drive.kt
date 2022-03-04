@@ -17,6 +17,8 @@ import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.LinearVelocity
 import org.ghrobotics.lib.mathematics.units.derived.Volt
 import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.ghrobotics.lib.mathematics.units.inMeters
+import org.ghrobotics.lib.mathematics.units.meter
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.seconds
@@ -25,6 +27,7 @@ import org.ghrobotics.lib.motors.ctre.falconSRX
 import org.ghrobotics.lib.subsystems.drive.FalconDriveHelper
 import org.ghrobotics.lib.subsystems.drive.FalconWestCoastDrivetrain
 import org.ghrobotics.lib.utils.Source
+import kotlin.math.PI
 
 object Drive : FalconWestCoastDrivetrain() {
 
@@ -40,34 +43,33 @@ object Drive : FalconWestCoastDrivetrain() {
     override val leftCharacterization: SimpleMotorFeedforward
         get() = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
-    override val leftMotor = falconFX(Constants.Drive.LEFT_MASTER_ID, Constants.Drive.NATIVE_UNIT_MODEL) {
-        outputInverted = false
-        brakeMode = true
-    }
     override val odometry: DifferentialDriveOdometry
         get() = DifferentialDriveOdometry(gyro())
 
     override val rightCharacterization: SimpleMotorFeedforward
         get() = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
+    override val leftMotor = falconFX(Constants.Drive.LEFT_MASTER_ID, Constants.Drive.NATIVE_UNIT_MODEL) {
+        outputInverted = false
+        brakeMode = true
+        useMotionProfileForPosition = true
+        motionProfileAcceleration = SIUnit(1.0)
+        motionProfileCruiseVelocity = SIUnit(1.0)
+    }
+
     override val rightMotor = falconFX(Constants.Drive.RIGHT_MASTER_ID, Constants.Drive.NATIVE_UNIT_MODEL) {
         outputInverted = true
         brakeMode = true
+        useMotionProfileForPosition = true
+        motionProfileAcceleration = SIUnit(1.0)
+        motionProfileCruiseVelocity = SIUnit(1.0)
     }
 
-    val leftPercent = Constants.debugTab2
-        .add("Left Percent", 0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(0, 1)
-        .withSize(1, 1)
-        .entry
-
-    val rightPercent = Constants.debugTab2
-        .add("Right Percent", 0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(1, 1)
-        .withSize(1, 1)
-        .entry
+    fun rotateInPlace(angle: Double) {
+        val arc = (2 * PI * (Constants.Drive.TRACK_WIDTH.inMeters() /2) * (angle/360)).meters
+        leftMotor.setPosition(-arc)
+        rightMotor.setPosition(arc)
+    }
 
     override val poseBuffer = TimePoseInterpolatableBuffer()
 

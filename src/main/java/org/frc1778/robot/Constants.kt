@@ -16,7 +16,7 @@ object Constants {
         const val RIGHT_MASTER_ID = 1
         const val RIGHT_SLAVE_ID = 3
 
-        val WHEEL_RADIUS = 3.inches
+        private val WHEEL_RADIUS = 3.inches
         val TRACK_WIDTH = 23.inches
 
         val NATIVE_UNIT_MODEL = NativeUnitLengthModel(2048.nativeUnits, WHEEL_RADIUS)
@@ -50,3 +50,4 @@ object Constants {
 
     }
 }
+

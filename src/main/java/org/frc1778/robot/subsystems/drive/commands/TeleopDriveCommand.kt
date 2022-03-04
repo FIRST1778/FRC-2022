@@ -9,6 +9,8 @@ import org.frc1778.robot.Constants
 import org.frc1778.robot.Controls
 import org.frc1778.robot.subsystems.drive.Drive
 import org.ghrobotics.lib.commands.FalconCommand
+import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.wrappers.networktables.get
 
 open class TeleopDriveCommand : FalconCommand(Drive) {
@@ -21,26 +23,6 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
     private val ledMode = limeTable["ledMode"]
     private val targetDistance = 3
 
-    val linearValue = Constants.debugTab2
-        .add("Linear Value", 0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(0, 0)
-        .withSize(1, 1)
-        .entry
-
-    val turnValue = Constants.debugTab2
-        .add("Turn Value", 0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(2, 1)
-        .withSize(1, 1)
-        .entry
-
-//    val quickTurn = Constants.debugTab2
-//        .add("Quick Turn", false)
-//        .withWidget(BuiltInWidgets.kBooleanBox)
-//        .withPosition(0, 2)
-//        .withSize(1, 1)
-//        .entry
 
     val Tx = Constants.debugTab2
         .add("Tx", 0)
@@ -78,12 +60,13 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
         .entry
 
     override fun execute() {
-        linearValue.setDouble(linearSource())
         Tx.setDouble(tx.getDouble(0.0))
         Ty.setDouble(ty.getDouble(0.0))
         Tv.setBoolean(tv.getBoolean(false))
+
         //distance in feet
-        val distance = ((104 - 22.75) / tan(25 + ty.getDouble(0.0) * (PI / 180))) / 12
+        val distance = (((104 - 22.75) / tan(25 + ty.getDouble(0.0) * (PI / 180))) / 12).feet.inMeters()
+
         Dist.setDouble(distance)
         DeltaD.setDouble(targetDistance - distance)
 
@@ -91,14 +74,9 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
 
         if (!limeSource() || ta.getDouble(0.0) < 0.0) {
             Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
-            turnValue.setDouble(turnSource())
         } else {
             ledMode.setDouble(3.0)
-            Drive.curvatureDrive(0.0, tx.getDouble(0.0) / 75, true)
-            turnValue.setDouble(tx.getDouble(0.0) / 85)
-            //(distance - targetDistance) / 4
-//            linearValue.setDouble((distance - targetDistance) / 4)
-//            Tv.setBoolean(true)
+            Drive.rotateInPlace(tx.getDouble(0.0))
         }
     }
 
