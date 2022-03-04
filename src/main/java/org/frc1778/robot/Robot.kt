@@ -2,7 +2,12 @@ package org.frc1778.robot
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import org.frc1778.robot.subsystems.climber.Climber
+import org.frc1778.robot.subsystems.collector.Collector
+import org.frc1778.robot.subsystems.drive.Drive
+import org.frc1778.robot.subsystems.loader.Loader
 import org.frc1778.robot.subsystems.shooter.Shooter
+import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 
 /**
@@ -19,7 +24,12 @@ object Robot : FalconTimedRobot()
 {
     init {
         +Shooter
+        +Drive
+        +Climber
+        +Collector
+        +Loader
     }
+
     private var selectedAutoMode = AutoMode.default
     private val autoModeChooser = SendableChooser<AutoMode>().also { chooser ->
         AutoMode.values().forEach { chooser.addOption(it.optionName, it) }
@@ -53,6 +63,7 @@ object Robot : FalconTimedRobot()
      */
     override fun robotInit()
     {
+        Collector.deployMotor.setPosition(SIUnit(-9.5))
         SmartDashboard.putData("Auto choices", autoModeChooser)
     }
 
@@ -92,7 +103,9 @@ object Robot : FalconTimedRobot()
     }
 
     /** This method is called once when teleop is enabled.  */
-    override fun teleopInit() {}
+    override fun teleopInit() {
+        Collector.deployMotor.setPosition(SIUnit(-9.5))
+    }
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {}

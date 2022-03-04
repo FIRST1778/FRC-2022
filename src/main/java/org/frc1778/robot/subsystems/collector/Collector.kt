@@ -1,13 +1,14 @@
 package org.frc1778.robot.subsystems.collector
 
-import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import org.frc1778.robot.Constants
 import org.frc1778.robot.subsystems.collector.commands.CollectorCommands
 import org.ghrobotics.lib.commands.FalconSubsystem
+import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.motors.ctre.falconFX
 import org.ghrobotics.lib.motors.rev.falconMAX
+
 
 object Collector : FalconSubsystem() {
     private val miniLeftMaster = falconMAX(Constants.Collector.LEFT_MINI_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless, DefaultNativeUnitModel) {
@@ -15,29 +16,45 @@ object Collector : FalconSubsystem() {
         outputInverted = false
     }
 
-    private val deployMotor = falconFX(Constants.Collector.DEPLOY_MOTOR, DefaultNativeUnitModel) {
+    val miniRightSlave = falconMAX(Constants.Collector.RIGHT_MINI_SLAVE, CANSparkMaxLowLevel.MotorType.kBrushless, DefaultNativeUnitModel) {
         brakeMode = true
         outputInverted = false
     }
 
-    fun runCollector(percent: Double) = miniLeftMaster.setDutyCycle(percent)
 
+    val deployMotor = falconFX(Constants.Collector.DEPLOY_MOTOR, DefaultNativeUnitModel) {
+        brakeMode = true
+        outputInverted = false
+        useMotionProfileForPosition = true
+        motionProfileCruiseVelocity = SIUnit(5500.0)
+        motionProfileAcceleration = SIUnit(18000.0)
+    }
 
-    fun deployCollector() {
+    val rotationModel = Constants.Collector.NATIVE_ROTATION_MODEL
 
+    private var collectorDown = false
+
+    fun runCollector(percent: Double) {
+        if(collectorDown) miniLeftMaster.setDutyCycle(percent)
+    }
+
+    fun toggleCollector() {
+        collectorDown = if(!collectorDown) {
+            deployMotor.setPosition(rotationModel.toNativeUnitPosition(SIUnit(9.5)))
+            true
+        } else {
+            deployMotor.setPosition(rotationModel.toNativeUnitPosition(SIUnit(0.0)))
+            false
+        }
     }
 
     init {
-        val minRightSlave = falconMAX(Constants.Collector.RIGHT_MINI_SLAVE, CANSparkMaxLowLevel.MotorType.kBrushless, DefaultNativeUnitModel) {
-            brakeMode = true
-            outputInverted = false
-            follow(miniLeftMaster)
-        }
-
-        deployMotor.motorController.config_kF(0, 0.0, 30)
-        deployMotor.motorController.config_kP(0, 0.0, 30)
+        deployMotor.encoder.resetPosition(SIUnit(0.0))
+        deployMotor.motorController.configAllowableClosedloopError(0, 100.0, 30)
+        deployMotor.motorController.config_kF(0, 0.075, 30)
+        deployMotor.motorController.config_kP(0, 1.6, 30)
         deployMotor.motorController.config_kI(0, 0.0, 30)
-        deployMotor.motorController.config_kD(0, 0.0, 30)
+        deployMotor.motorController.config_kD(0, 16.0, 30)
 
 
         defaultCommand = CollectorCommands()

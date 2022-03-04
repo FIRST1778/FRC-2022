@@ -1,30 +1,70 @@
 package org.frc1778.robot.subsystems.climber
 
 import com.revrobotics.CANSparkMaxLowLevel
+import edu.wpi.first.wpilibj.AnalogEncoder
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.robot.Constants
+import org.frc1778.robot.Constants.debugTab2
 import org.frc1778.robot.subsystems.climber.commands.ClimberCommands
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.derived.Radian
+import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.motors.rev.falconMAX
 
 object Climber : FalconSubsystem() {
-    private val winchMotor = falconMAX(Constants.Climber.CLIMBER_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
+    private val climberSetPosition = debugTab2
+        .add("Climber Set Position", 0.0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .withPosition(0, 3)
+        .withSize(1,1)
+        .entry
+
+    private val winchMotorRight = falconMAX(Constants.Climber.CLIMBER_MOTOR_RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
         brakeMode = true
         outputInverted = false
+        useMotionProfileForPosition = true
+        motionProfileCruiseVelocity = SIUnit(10.0)
+        motionProfileAcceleration = SIUnit(100.0)
     }
 
-    //TODO: Determine open loop control or close loop to two set positions
-    fun deployHook() {
+    val winchMotorLeft = falconMAX(Constants.Climber.CLIMBER_MOTOR_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
+        brakeMode = true
+        //TODO: Get Motor Direction
+        outputInverted = false
+        follow(winchMotorRight)
+    }
 
+    val climberEncoder = winchMotorRight.encoder
+
+    private const val deployedClimberEncoderValue = 8.5
+
+    fun moveClimber(percent: Double) {
+        winchMotorRight.setDutyCycle(percent)
+    }
+
+    //TODO: Determine Deployed Hook Encoder Val
+    fun deployHook() {
+        climberSetPosition.setDouble(0.0)
+        winchMotorRight.setPosition(SIUnit(0.0))
     }
 
     //TODO: Find correct position for maintained climb
     fun climb() {
-        winchMotor.setPosition(SIUnit<Radian>(0.0))
+        climberSetPosition.setDouble(deployedClimberEncoderValue)
+        winchMotorRight.setPosition(SIUnit(deployedClimberEncoderValue))
     }
 
     init {
+//       winchMotorRight.encoder.resetPosition(SIUnit(0.0))
+        winchMotorRight.setDutyCycle(0.0)
+
+        winchMotorRight.controller.ff = 0.000065
+        winchMotorRight.controller.p = 0.000004815
+        winchMotorRight.controller.i = 0.00000
+        winchMotorRight.controller.d = 0.0
+
+
+
         defaultCommand = ClimberCommands()
     }
 

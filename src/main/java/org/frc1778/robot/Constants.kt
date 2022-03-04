@@ -12,8 +12,8 @@ object Constants {
 
     object Drive {
         const val LEFT_MASTER_ID = 2
-        const val LEFT_SLAVE_ID = 1
-        const val RIGHT_MASTER_ID = 4
+        const val LEFT_SLAVE_ID = 4
+        const val RIGHT_MASTER_ID = 1
         const val RIGHT_SLAVE_ID = 3
 
         val WHEEL_RADIUS = 3.inches
@@ -23,27 +23,30 @@ object Constants {
     }
 
     object Shooter {
-        const val SHOOTER_FLYWHEEL = 0
+        const val SHOOTER_FLYWHEEL = 19
         const val ANGLE_ADJUSTMENT = 21
         val NATIVE_ROTATION_MODEL = NativeUnitRotationModel(2048.nativeUnits)
     }
 
     object Loader {
-        const val MAIN_WHEEL = 0
-        const val LOADER_WHEEL = 0
-        const val INTERMEDIATE_WHEEL = 0
+        const val MAIN_WHEEL = 16
+        const val LOADER_WHEEL = 40
+        const val INTERMEDIATE_WHEEL = 30
     }
 
     object Collector {
-        const val LEFT_MINI_MASTER = 0
-        const val RIGHT_MINI_SLAVE = 0
-        const val DEPLOY_MOTOR = 0
+        const val LEFT_MINI_MASTER = 22
+        const val RIGHT_MINI_SLAVE = 33
+        const val DEPLOY_MOTOR = 11
+
+        val NATIVE_ROTATION_MODEL = NativeUnitRotationModel(2048.nativeUnits)
     }
 
     object Climber {
-        const val CLIMBER_MOTOR = 0
+        const val CLIMBER_MOTOR_RIGHT = 42
+        const val CLIMBER_MOTOR_LEFT = 31
 
-        //TODO: Find native units per rotation for absolute encoder
-        val NATIVE_ROTATION_MODEL = NativeUnitRotationModel(0.nativeUnits)
+        val NATIVE_ROTATION_MODEL = NativeUnitRotationModel(42.nativeUnits)
+
     }
 }

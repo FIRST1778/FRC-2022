@@ -7,6 +7,7 @@ import org.frc1778.robot.subsystems.shooter.commands.ShootCommand
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
+import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.ctre.falconFX
@@ -20,13 +21,6 @@ object Shooter : FalconSubsystem() {
         .withSize(1,1)
         .entry
 
-    val nativeUnitsVal = Constants.debugTab2
-        .add("Native Units", 0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(0, 2)
-        .withSize(1,1)
-        .entry
-
     private val rotationModel = NativeUnitRotationModel(2048.nativeUnits)
 
     private val flywheelMotor = falconFX(Constants.Shooter.SHOOTER_FLYWHEEL, NATIVE_ROTATION_MODEL) {
@@ -34,7 +28,7 @@ object Shooter : FalconSubsystem() {
         outputInverted = false
 
     }
-private val angleAdjuster = falconFX(Constants.Shooter.ANGLE_ADJUSTMENT, NATIVE_ROTATION_MODEL) {
+    private val angleAdjuster = falconFX(Constants.Shooter.ANGLE_ADJUSTMENT, NATIVE_ROTATION_MODEL) {
         brakeMode = true
         outputInverted = true
         motionProfileCruiseVelocity = SIUnit(360.0)
@@ -49,15 +43,26 @@ private val angleAdjuster = falconFX(Constants.Shooter.ANGLE_ADJUSTMENT, NATIVE_
         flywheelMotor.setDutyCycle(percent)
     }
 
+    fun runShooter(velocity: SIUnit<Velocity<Radian>>) {
+        flywheelMotor.setVelocity(velocity)
+    }
+
     fun setAngle(angle: SIUnit<Radian>) {
-        nativeUnitsVal.setDouble(NATIVE_ROTATION_MODEL.toNativeUnitPosition(angle).value)
         angleValue.setDouble(angle.value)
         angleAdjuster.setPosition(angle)
     }
 
+    //TODO: !!! GET VALUES FOR SHOOTER !!!
+    fun getSetPositions(distance: Double): Pair<Double, SIUnit<Radian>> {
+        return Pair(0.0, SIUnit<Radian>(0.0))
+    }
+
+
+
     init {
-//        angleEncoder.resetPosition(0.radians)
         defaultCommand = ShootCommand()
+
+//        angleEncoder.resetPosition(SIUnit(0.0))
 
         angleAdjuster.motorController.config_kF(0, 0.075, 30)
         angleAdjuster.motorController.config_kP(0, .85, 30)

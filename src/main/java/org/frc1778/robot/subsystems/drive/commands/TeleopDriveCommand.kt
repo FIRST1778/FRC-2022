@@ -82,23 +82,24 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
         Tx.setDouble(tx.getDouble(0.0))
         Ty.setDouble(ty.getDouble(0.0))
         Tv.setBoolean(tv.getBoolean(false))
-
-        val distance = ((18 - 8) / tan((16.1 + ty.getDouble(0.0)) * (PI / 180))) / 12
+        //distance in feet
+        val distance = ((104 - 22.75) / tan(25 + ty.getDouble(0.0) * (PI / 180))) / 12
         Dist.setDouble(distance)
         DeltaD.setDouble(targetDistance - distance)
 
-        ledMode.setDouble(1.0)
+        ledMode.setDouble(3.0)
 
-//        if (!limeSource() || ta.getDouble(0.0) < 0.0) {
+        if (!limeSource() || ta.getDouble(0.0) < 0.0) {
             Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
-//            turnValue.setDouble(turnSource())
-//        } else {
-//            ledMode.setDouble(3.0)
-//            Drive.curvatureDrive((distance - targetDistance) / 4, tx.getDouble(0.0) / 85, true)
-//            turnValue.setDouble(tx.getDouble(0.0) / 85)
+            turnValue.setDouble(turnSource())
+        } else {
+            ledMode.setDouble(3.0)
+            Drive.curvatureDrive(0.0, tx.getDouble(0.0) / 75, true)
+            turnValue.setDouble(tx.getDouble(0.0) / 85)
+            //(distance - targetDistance) / 4
 //            linearValue.setDouble((distance - targetDistance) / 4)
-////            Tv.setBoolean(true)
-//        }
+//            Tv.setBoolean(true)
+        }
     }
 
     companion object {
