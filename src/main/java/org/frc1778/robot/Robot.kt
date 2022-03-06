@@ -1,13 +1,14 @@
 package org.frc1778.robot
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.Timer
 import org.frc1778.robot.subsystems.climber.Climber
 import org.frc1778.robot.subsystems.collector.Collector
 import org.frc1778.robot.subsystems.drive.Drive
 import org.frc1778.robot.subsystems.loader.Loader
 import org.frc1778.robot.subsystems.shooter.Shooter
 import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 
 /**
@@ -22,6 +23,8 @@ import org.ghrobotics.lib.wrappers.FalconTimedRobot
  */
 object Robot : FalconTimedRobot()
 {
+    val matchTimer = Timer()
+
     init {
         +Shooter
         +Drive
@@ -30,11 +33,11 @@ object Robot : FalconTimedRobot()
         +Loader
     }
 
-    private var selectedAutoMode = AutoMode.default
-    private val autoModeChooser = SendableChooser<AutoMode>().also { chooser ->
-        AutoMode.values().forEach { chooser.addOption(it.optionName, it) }
-        chooser.setDefaultOption(AutoMode.default.optionName, AutoMode.default)
-    }
+//    private var selectedAutoMode = AutoMode.default
+//    private val autoModeChooser = SendableChooser<AutoMode>().also { chooser ->
+//        AutoMode.values().forEach { chooser.addOption(it.optionName, it) }
+//        chooser.setDefaultOption(AutoMode.default.optionName, AutoMode.default)
+//    }
 
     /**
      * A enumeration of the available autonomous modes.
@@ -43,19 +46,19 @@ object Robot : FalconTimedRobot()
      * @param periodicFunction The function that is called in the [autonomousPeriodic] function each time it is called.
      * @param autoInitFunction An optional function that is called in the [autonomousInit] function.
      */
-    private enum class AutoMode(val optionName: String,
-                                val periodicFunction: () -> Unit,
-                                val autoInitFunction: () -> Unit = { /* No op by default */ } )
-    {
-        CUSTOM_AUTO_1("Custom Auto Mode 1", ::autoMode1),
-        CUSTOM_AUTO_2("Custom Auto Mode 2", ::autoMode2),
-        ;
-        companion object
-        {
-            /** The default auto mode. */
-            val default = CUSTOM_AUTO_1
-        }
-    }
+//    private enum class AutoMode(val optionName: String,
+//                                val periodicFunction: () -> Unit,
+//                                val autoInitFunction: () -> Unit = { /* No op by default */ } )
+//    {
+//        CUSTOM_AUTO_1("Custom Auto Mode 1", ::autoMode1),
+//        CUSTOM_AUTO_2("Custom Auto Mode 2", ::autoMode2),
+//        ;
+//        companion object
+//        {
+//            /** The default auto mode. */
+//            val default = CUSTOM_AUTO_1
+//        }
+//    }
 
     /**
      * This method is run when the robot is first started up and should be used for any
@@ -63,8 +66,7 @@ object Robot : FalconTimedRobot()
      */
     override fun robotInit()
     {
-        Collector.deployMotor.setPosition(SIUnit(-9.5))
-        SmartDashboard.putData("Auto choices", autoModeChooser)
+//        SmartDashboard.putData("Auto choices", autoModeChooser)
     }
 
     /**
@@ -77,6 +79,12 @@ object Robot : FalconTimedRobot()
     override fun robotPeriodic() {}
 
     override fun autonomousInit() {
+        Drive.resetEncoders()
+        matchTimer.start()
+        Climber.winchMotorRight.encoder.resetPosition(SIUnit(0.0))
+        Shooter.angleEncoder.resetPosition(SIUnit(0.0))
+        Collector.deployMotor.encoder.resetPosition(SIUnit(0.0))
+        Shooter.setAngle()
         /* This autonomousInit function (along with the initAutoChooser function) shows how to select
         between different autonomous modes using the dashboard. The sendable chooser code works with the
         SmartDashboard. You can add additional auto modes by adding additional options to the AutoMode enum
@@ -84,27 +92,44 @@ object Robot : FalconTimedRobot()
 
         If you prefer the LabVIEW Dashboard, remove all the chooser code and uncomment the following line: */
         //selectedAutoMode = AutoMode.valueOf(SmartDashboard.getString("Auto Selector", AutoMode.default.name))
-        selectedAutoMode = autoModeChooser.selected ?: AutoMode.default
-        println("Selected auto mode: ${selectedAutoMode.optionName}")
-        selectedAutoMode.autoInitFunction.invoke()
+//        selectedAutoMode = autoModeChooser.selected ?: AutoMode.default
+//        println("Selected auto mode: ${selectedAutoMode.optionName}")
+//        selectedAutoMode.autoInitFunction.invoke()
     }
 
     /** This method is called periodically during autonomous.  */
-    override fun autonomousPeriodic() = selectedAutoMode.periodicFunction.invoke()
-
-    private fun autoMode1()
-    {
-        TODO("Write custom auto mode 1")
+    override fun autonomousPeriodic() {
+        if(matchTimer.get() < 1.0) {
+            Drive.curvatureDrive(-.12, 0.0, false)
+            Shooter.runShooter()
+        } else if(matchTimer.get() > 2.5 && matchTimer.get() < 4.0) {
+            Drive.curvatureDrive(0.0,0.0,false)
+            Loader.runLoader(.15)
+        } else if(matchTimer.get() > 4.0 && matchTimer.get() < 5.0 ){
+            Loader.runLoader(0.0)
+            Shooter.runShooter(0.0)
+        } else if(matchTimer.get() > 5.0 && matchTimer.get() < 5.5) {
+            Drive.curvatureDrive(-.12, 0.0, false)
+        } else if(matchTimer.get() > 5.5){
+            Drive.curvatureDrive(0.0, 0.0, false)
+        }
     }
 
-    private fun autoMode2()
-    {
-        TODO("Write custom auto mode 2")
-    }
+//    private fun autoMode1()
+//    {
+//        TODO("Write custom auto mode 1")
+//    }
+//
+//    private fun autoMode2()
+//    {
+//        TODO("Write custom auto mode 2")
+//    }
 
     /** This method is called once when teleop is enabled.  */
     override fun teleopInit() {
+        Drive.auto = false
         Collector.deployMotor.setPosition(SIUnit(-9.5))
+
     }
 
     /** This method is called periodically during operator control.  */

@@ -12,13 +12,9 @@ import org.ghrobotics.lib.motors.ctre.falconFX
 
 object Shooter : FalconSubsystem() {
 
-    private val angleValue = Constants.debugTab2
-        .add("Angle",0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(1, 0)
-        .withSize(1,1)
-        .entry
 
+    private val shootAngle = SIUnit<Radian>(4.5)
+    private val velocity = SIUnit<Velocity<Radian>>(510.0)
 
     private val flywheelMotor = falconFX(Constants.Shooter.SHOOTER_FLYWHEEL, NATIVE_ROTATION_MODEL) {
         brakeMode = true
@@ -40,30 +36,34 @@ object Shooter : FalconSubsystem() {
         flywheelMotor.setDutyCycle(percent)
     }
 
-    fun runShooter(velocity: SIUnit<Velocity<Radian>>) {
+    fun runShooter() {
         flywheelMotor.setVelocity(velocity)
     }
 
-    fun setAngle(angle: SIUnit<Radian>) {
-        angleValue.setDouble(angle.value)
-        angleAdjuster.setPosition(angle)
+    fun setAngle() {
+        angleAdjuster.setPosition(shootAngle)
     }
 
     //TODO: !!! GET VALUES FOR SHOOTER !!!
-    fun getSetPositions(distance: Double): Pair<Double, SIUnit<Radian>> {
-        return Pair(0.0, SIUnit(0.0))
-    }
+//    fun getSetPositions(distance: Double): Pair<Double, SIUnit<Radian>> {
+//        return Pair(0.0, SIUnit(0.0))
+//    }
 
 
 
     init {
         defaultCommand = ShootCommand()
 
-//        angleEncoder.resetPosition(SIUnit(0.0))
+        angleEncoder.resetPosition(SIUnit(0.0))
 
         angleAdjuster.motorController.config_kF(0, 0.075, 30)
         angleAdjuster.motorController.config_kP(0, .85, 30)
         angleAdjuster.motorController.config_kI(0,0.0,30)
         angleAdjuster.motorController.config_kD(0, 10.0, 30)
+
+        flywheelMotor.motorController.config_kD(0, 0.065, 30)
+        flywheelMotor.motorController.config_kF(0, 0.045, 30)
+        flywheelMotor.motorController.config_kI(0, 0.001, 30)
+        flywheelMotor.motorController.config_kP(0, 0.17, 30)
     }
 }

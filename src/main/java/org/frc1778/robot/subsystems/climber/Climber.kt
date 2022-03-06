@@ -19,7 +19,7 @@ object Climber : FalconSubsystem() {
         .withSize(1,1)
         .entry
 
-    private val winchMotorRight = falconMAX(Constants.Climber.CLIMBER_MOTOR_RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
+    val winchMotorRight = falconMAX(Constants.Climber.CLIMBER_MOTOR_RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
         brakeMode = true
         outputInverted = false
         useMotionProfileForPosition = true
@@ -34,28 +34,25 @@ object Climber : FalconSubsystem() {
         follow(winchMotorRight)
     }
 
-    val climberEncoder = winchMotorRight.encoder
 
-    private const val deployedClimberEncoderValue = 8.5
-
-    fun moveClimber(percent: Double) {
-        winchMotorRight.setDutyCycle(percent)
+    private const val deployedClimberEncoderValue = 7.5
+    fun deployHook1() {
+        winchMotorRight.setPosition(SIUnit(deployedClimberEncoderValue-2.2))
     }
 
+
     //TODO: Determine Deployed Hook Encoder Val
-    fun deployHook() {
-        climberSetPosition.setDouble(0.0)
-        winchMotorRight.setPosition(SIUnit(0.0))
+    fun deployHook2() {
+        winchMotorRight.setPosition(SIUnit(deployedClimberEncoderValue))
     }
 
     //TODO: Find correct position for maintained climb
     fun climb() {
-        climberSetPosition.setDouble(deployedClimberEncoderValue)
-        winchMotorRight.setPosition(SIUnit(deployedClimberEncoderValue))
+        winchMotorRight.setPosition(SIUnit(0.0))
     }
 
     init {
-//       winchMotorRight.encoder.resetPosition(SIUnit(0.0))
+       winchMotorRight.encoder.resetPosition(SIUnit(0.0))
         winchMotorRight.setDutyCycle(0.0)
 
         winchMotorRight.controller.ff = 0.000065

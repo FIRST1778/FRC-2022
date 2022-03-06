@@ -8,23 +8,11 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.robot.Constants
 import org.frc1778.robot.subsystems.drive.commands.TeleopDriveCommand
-import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
-import org.ghrobotics.lib.mathematics.units.Ampere
-import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.amps
-import org.ghrobotics.lib.mathematics.units.derived.LinearVelocity
-import org.ghrobotics.lib.mathematics.units.derived.Volt
-import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.mathematics.units.inMeters
-import org.ghrobotics.lib.mathematics.units.meter
 import org.ghrobotics.lib.mathematics.units.meters
-import org.ghrobotics.lib.mathematics.units.operations.div
-import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.motors.ctre.falconFX
-import org.ghrobotics.lib.motors.ctre.falconSRX
-import org.ghrobotics.lib.subsystems.drive.FalconDriveHelper
 import org.ghrobotics.lib.subsystems.drive.FalconWestCoastDrivetrain
 import org.ghrobotics.lib.utils.Source
 import kotlin.math.PI
@@ -53,22 +41,49 @@ object Drive : FalconWestCoastDrivetrain() {
         outputInverted = false
         brakeMode = true
         useMotionProfileForPosition = true
-        motionProfileAcceleration = SIUnit(1.0)
-        motionProfileCruiseVelocity = SIUnit(1.0)
+        motionProfileAcceleration = SIUnit(800.0)
+        motionProfileCruiseVelocity = SIUnit(4000.0)
     }
 
     override val rightMotor = falconFX(Constants.Drive.RIGHT_MASTER_ID, Constants.Drive.NATIVE_UNIT_MODEL) {
         outputInverted = true
         brakeMode = true
         useMotionProfileForPosition = true
-        motionProfileAcceleration = SIUnit(1.0)
-        motionProfileCruiseVelocity = SIUnit(1.0)
+        motionProfileAcceleration = SIUnit(800.0)
+        motionProfileCruiseVelocity = SIUnit(4000.0)
+    }
+
+    private val arcTab = Constants.debugTab2
+        .add("Arc", 0.0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .withSize(1,1)
+        .withPosition(0, 3)
+        .entry
+
+        fun resetEncoders() {
+        rightMotor.encoder.resetPosition(SIUnit(0.0))
+        leftMotor.encoder.resetPosition(SIUnit(0.0))
+
+    }
+
+
+    var auto = true
+    fun drive(distance: Double) {
+        leftMotor.useMotionProfileForPosition = true
+        rightMotor.useMotionProfileForPosition = true
+
+        leftMotor.setPosition(distance.meters)
+        rightMotor.setPosition(distance.meters)
+
     }
 
     fun rotateInPlace(angle: Double) {
+        leftMotor.useMotionProfileForPosition = true
+        rightMotor.useMotionProfileForPosition = true
         val arc = (2 * PI * (Constants.Drive.TRACK_WIDTH.inMeters() /2) * (angle/360)).meters
-        leftMotor.setPosition(-arc)
-        rightMotor.setPosition(arc)
+        leftMotor.setPosition(leftMotor.encoder.position+arc)
+        rightMotor.setPosition(rightMotor.encoder.position-arc)
+
     }
 
     override val poseBuffer = TimePoseInterpolatableBuffer()
@@ -93,6 +108,16 @@ object Drive : FalconWestCoastDrivetrain() {
             brakeMode = true
             follow(rightMotor)
         }
+
+        leftMotor.motorController.config_kF(0, 0.15, 30)
+        leftMotor.motorController.config_kP(0, .65, 30)
+        leftMotor.motorController.config_kI(0,0.0,30)
+        leftMotor.motorController.config_kD(0, 4.0, 30)
+
+        rightMotor.motorController.config_kF(0, 0.15, 30)
+        rightMotor.motorController.config_kP(0, .65, 30)
+        rightMotor.motorController.config_kI(0,0.0,30)
+        rightMotor.motorController.config_kD(0, 4.0, 30)
 
         defaultCommand = TeleopDriveCommand()
     }

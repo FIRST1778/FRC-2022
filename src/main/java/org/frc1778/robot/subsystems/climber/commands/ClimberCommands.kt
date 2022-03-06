@@ -8,24 +8,18 @@ import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.SIUnit
 
 open class ClimberCommands : FalconCommand(Climber) {
-    private val climberEncoderReset = Constants.debugTab2
-        .add("Climber Encoder Reset", 0)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withPosition(0,0)
-        .withSize(1,1)
-        .entry
 
     override fun execute() {
-        if(climberEncoderReset.getBoolean(false)) Climber.climberEncoder.resetPosition(SIUnit(0.0))
-//        Climber.moveClimber(climbAdjust())
-        if(climberUpSource()) Climber.deployHook()
+        if(climberUpSource2()) Climber.deployHook2()
+        if(climberUpSource1()) Climber.deployHook1()
         if(climberDownSource()) Climber.climb()
     }
 
 
     companion object {
         var climbAdjust = Controls.driverController.getRawAxis(3)
-        var climberDownSource = Controls.operatorController.getRawButton(8)
-        var climberUpSource = Controls.operatorController.getRawButton(7)
+        var climberDownSource = Controls.operatorController.getRawButton(7)
+        var climberUpSource1 = Controls.operatorController.getRawButton(10)
+        var climberUpSource2 = Controls.operatorController.getRawButton(8)
     }
 }

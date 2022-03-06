@@ -24,40 +24,27 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
     private val targetDistance = 3
 
 
-    val Tx = Constants.debugTab2
+    private val Tx = Constants.debugTab2
         .add("Tx", 0)
         .withWidget(BuiltInWidgets.kTextView)
         .withPosition(1, 0)
         .withSize(1, 1)
         .entry
 
-    val Ty = Constants.debugTab2
+    private val Ty = Constants.debugTab2
         .add("Ty", 0)
         .withWidget(BuiltInWidgets.kTextView)
         .withPosition(5, 0)
         .withSize(1, 1)
         .entry
 
-    val Tv = Constants.debugTab2
+    private val Tv = Constants.debugTab2
         .add("Target?", false)
         .withWidget(BuiltInWidgets.kTextView)
         .withPosition(2, 0)
         .withSize(1, 1)
         .entry
 
-    val Dist = Constants.debugTab2
-        .add("Distance", 0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(3, 0)
-        .withSize(1, 1)
-        .entry
-
-    val DeltaD = Constants.debugTab2
-        .add("Delta Distance", 0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(4, 0)
-        .withSize(1, 1)
-        .entry
 
     override fun execute() {
         Tx.setDouble(tx.getDouble(0.0))
@@ -65,21 +52,22 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
         Tv.setBoolean(tv.getBoolean(false))
 
         //distance in feet
-        val distance = (((104 - 22.75) / tan(25 + ty.getDouble(0.0) * (PI / 180))) / 12).feet.inMeters()
+        val distance = (((104 - 22.75) / tan(25 + ty.getDouble(0.0) * (PI / 180))) / 12).feet
 
-        Dist.setDouble(distance)
-        DeltaD.setDouble(targetDistance - distance)
 
         ledMode.setDouble(3.0)
-
-        if (!limeSource() || ta.getDouble(0.0) < 0.0) {
-            Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
-        } else {
-            ledMode.setDouble(3.0)
-            Drive.rotateInPlace(tx.getDouble(0.0))
+        if(!Drive.auto) {
+            if ((!limeSource() || ta.getDouble(0.0) < 0.0)) {
+                Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
+            } else {
+                ledMode.setDouble(3.0)
+                Drive.rotateInPlace(tx.getDouble(0.0))
+            }
         }
+//        } else {
+//            Drive.drive(-5.feet.inMeters())
+//        }
     }
-
     companion object {
         val linearSource = Controls.driverController.getRawAxis(1)
         val turnSource = Controls.driverController.getRawAxis(2)

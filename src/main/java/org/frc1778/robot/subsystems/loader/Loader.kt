@@ -36,6 +36,12 @@ object Loader : FalconSubsystem() {
     fun runLoader(percent: Double) {
         loaderMotor.setDutyCycle(percent)
         if(percent != 0.0) mainMotor.setDutyCycle(percent)
+        if(percent != 0.0) hopperMotor.setDutyCycle(percent)
+    }
+
+    fun backUpLoader(percent: Double) {
+        loaderMotor.setDutyCycle(percent)
+        if(percent != 0.0) mainMotor.setDutyCycle(percent)
     }
 
     init {
