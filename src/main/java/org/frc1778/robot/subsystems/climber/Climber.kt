@@ -23,16 +23,10 @@ object Climber : FalconSubsystem() {
         brakeMode = true
         outputInverted = false
         useMotionProfileForPosition = true
-        motionProfileCruiseVelocity = SIUnit(10.0)
-        motionProfileAcceleration = SIUnit(100.0)
+        motionProfileCruiseVelocity = SIUnit(20.0)
+        motionProfileAcceleration = SIUnit(250.0)
     }
 
-    val winchMotorLeft = falconMAX(Constants.Climber.CLIMBER_MOTOR_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
-        brakeMode = true
-        //TODO: Get Motor Direction
-        outputInverted = false
-        follow(winchMotorRight)
-    }
 
 
     private const val deployedClimberEncoderValue = 7.5
@@ -47,12 +41,16 @@ object Climber : FalconSubsystem() {
     }
 
     //TODO: Find correct position for maintained climb
-    fun climb() {
+    fun climbDown() {
         winchMotorRight.setPosition(SIUnit(0.0))
     }
 
+    fun climb() {
+        winchMotorRight.setPosition(SIUnit(-1.0))
+    }
+
     init {
-       winchMotorRight.encoder.resetPosition(SIUnit(0.0))
+        winchMotorRight.encoder.resetPosition(SIUnit(0.0))
         winchMotorRight.setDutyCycle(0.0)
 
         winchMotorRight.controller.ff = 0.000065
@@ -60,7 +58,12 @@ object Climber : FalconSubsystem() {
         winchMotorRight.controller.i = 0.00000
         winchMotorRight.controller.d = 0.0
 
-
+        val winchMotorLeft = falconMAX(Constants.Climber.CLIMBER_MOTOR_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
+            brakeMode = true
+            outputInverted = false
+            follow(winchMotorRight)
+        }
+//        winchMotorLeft.follow(winchMotorRight)
 
         defaultCommand = ClimberCommands()
     }

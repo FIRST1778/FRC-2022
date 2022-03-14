@@ -1,14 +1,21 @@
 package org.frc1778.robot
 
 import edu.wpi.first.wpilibj.Timer
+import frc.team4069.keigen.mat
 import org.frc1778.robot.subsystems.climber.Climber
 import org.frc1778.robot.subsystems.collector.Collector
+import org.frc1778.robot.subsystems.collector.commands.deployLast
 import org.frc1778.robot.subsystems.drive.Drive
 import org.frc1778.robot.subsystems.loader.Loader
 import org.frc1778.robot.subsystems.shooter.Shooter
+import org.frc1778.util.pathing.Line
+import org.frc1778.util.pathing.Path
+import org.frc1778.util.pathing.events.*
 import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.inMeters
+import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 
 /**
@@ -24,6 +31,7 @@ import org.ghrobotics.lib.wrappers.FalconTimedRobot
 object Robot : FalconTimedRobot()
 {
     val matchTimer = Timer()
+    val autoPath = Path()
 
     init {
         +Shooter
@@ -31,6 +39,16 @@ object Robot : FalconTimedRobot()
         +Climber
         +Collector
         +Loader
+
+        autoPath.run {
+            add(Line(2.feet.value, 45.degrees, 0.0))
+            add(CollectorDown())
+            add(CollectorOn())
+            add(Wait(.1, path[0].endTime))
+            add(Line(1.2.feet.value, 15.degrees , path[3].endTime))
+            add(CollectorOff())
+            add(CollectorUp())
+        }
     }
 
 //    private var selectedAutoMode = AutoMode.default
@@ -79,12 +97,13 @@ object Robot : FalconTimedRobot()
     override fun robotPeriodic() {}
 
     override fun autonomousInit() {
+        Drive.auto = true
         Drive.resetEncoders()
         matchTimer.start()
         Climber.winchMotorRight.encoder.resetPosition(SIUnit(0.0))
         Shooter.angleEncoder.resetPosition(SIUnit(0.0))
         Collector.deployMotor.encoder.resetPosition(SIUnit(0.0))
-        Shooter.setAngle()
+//        Shooter.setAngle()
         /* This autonomousInit function (along with the initAutoChooser function) shows how to select
         between different autonomous modes using the dashboard. The sendable chooser code works with the
         SmartDashboard. You can add additional auto modes by adding additional options to the AutoMode enum
@@ -99,20 +118,48 @@ object Robot : FalconTimedRobot()
 
     /** This method is called periodically during autonomous.  */
     override fun autonomousPeriodic() {
-        if(matchTimer.get() < 1.0) {
-            Drive.curvatureDrive(-.12, 0.0, false)
-            Shooter.runShooter()
-        } else if(matchTimer.get() > 2.5 && matchTimer.get() < 4.0) {
-            Drive.curvatureDrive(0.0,0.0,false)
-            Loader.runLoader(.15)
-        } else if(matchTimer.get() > 4.0 && matchTimer.get() < 5.0 ){
-            Loader.runLoader(0.0)
-            Shooter.runShooter(0.0)
-        } else if(matchTimer.get() > 5.0 && matchTimer.get() < 5.5) {
-            Drive.curvatureDrive(-.12, 0.0, false)
-        } else if(matchTimer.get() > 5.5){
-            Drive.curvatureDrive(0.0, 0.0, false)
-        }
+
+        autoPath.runPath(matchTimer)
+
+
+
+//        val rot = 180.degrees
+//        val timeToComplete = (rot/Constants.Drive.rotSpeed.value).value
+//
+//        if(matchTimer.get() < timeToComplete) {
+//            Drive.rotateRight()
+//        } else {
+//            Drive.curvatureDrive(0.0, 0.0, false)
+//        }
+
+
+
+//        val dist = 2.feet
+//        val timeToComplete = (dist / Constants.Drive.speed.value).value
+//        if(matchTimer.get() < timeToComplete) {
+//            Drive.drive()
+//        } else {
+//            Drive.curvatureDrive(0.0, 0.0, false)
+//        }
+
+//        if(matchTimer.get() < 1.0) {
+//            Drive.curvatureDrive(-.12, 0.0, false)
+////            Shooter.runShooter()
+//        } else if(matchTimer.get() > 2.5 && matchTimer.get() < 4.0) {
+//            Drive.curvatureDrive(0.0,0.0,false)
+//            Loader.runLoader(.15)
+//        } else if(matchTimer.get() > 4.0 && matchTimer.get() < 5.0 ){
+//            Loader.runLoader(0.0)
+//            Shooter.runShooter(0.0)
+//        } else if(matchTimer.get() > 5.0 && matchTimer.get() < 5.3) {
+//            Drive.curvatureDrive(-.15, 0.0, false)
+//        } else if(matchTimer.get() > 5.5){
+//            Drive.curvatureDrive(0.0, 0.0, false)
+//        }
+
+//        Drive.resetEncoders()
+//        Drive.drive(1.0)
+//        Drive.rotateInPlace(90.0)
     }
 
 //    private fun autoMode1()
@@ -128,6 +175,7 @@ object Robot : FalconTimedRobot()
     /** This method is called once when teleop is enabled.  */
     override fun teleopInit() {
         Drive.auto = false
+        Shooter.setAngle(SIUnit(.0))
         Collector.deployMotor.setPosition(SIUnit(-9.5))
 
     }

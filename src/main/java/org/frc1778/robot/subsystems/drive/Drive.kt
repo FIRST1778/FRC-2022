@@ -12,15 +12,29 @@ import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.mathematics.units.meters
+import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnit
+import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
+import org.ghrobotics.lib.mathematics.units.nativeunit.toNativeUnitPosition
 import org.ghrobotics.lib.motors.ctre.falconFX
 import org.ghrobotics.lib.subsystems.drive.FalconWestCoastDrivetrain
 import org.ghrobotics.lib.utils.Source
+import java.lang.annotation.Native
 import kotlin.math.PI
 
 object Drive : FalconWestCoastDrivetrain() {
 
+
+    val driveSetDistance = Constants.debugTab2
+        .add("Set Drive Distance", 0.0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .withPosition(1, 3)
+        .withSize(1,1)
+        .entry
+
     override val controller: RamseteController
         get() = RamseteController(2.0, 0.7)
+
+    private val nativeUnitModel = Constants.Drive.NATIVE_UNIT_MODEL
 
     override val gyro: Source<Rotation2d>
         get() = { Rotation2d() }
@@ -41,17 +55,19 @@ object Drive : FalconWestCoastDrivetrain() {
         outputInverted = false
         brakeMode = true
         useMotionProfileForPosition = true
-        motionProfileAcceleration = SIUnit(800.0)
-        motionProfileCruiseVelocity = SIUnit(4000.0)
+        motionProfileAcceleration = SIUnit(4.0)
+        motionProfileCruiseVelocity = SIUnit(4.5)
     }
 
     override val rightMotor = falconFX(Constants.Drive.RIGHT_MASTER_ID, Constants.Drive.NATIVE_UNIT_MODEL) {
         outputInverted = true
         brakeMode = true
         useMotionProfileForPosition = true
-        motionProfileAcceleration = SIUnit(800.0)
-        motionProfileCruiseVelocity = SIUnit(4000.0)
+        motionProfileAcceleration = SIUnit(.5)
+        motionProfileCruiseVelocity = SIUnit(1.0)
     }
+
+    val encoder = rightMotor.encoder
 
     private val arcTab = Constants.debugTab2
         .add("Arc", 0.0)
@@ -68,22 +84,37 @@ object Drive : FalconWestCoastDrivetrain() {
 
 
     var auto = true
-    fun drive(distance: Double) {
-        leftMotor.useMotionProfileForPosition = true
-        rightMotor.useMotionProfileForPosition = true
-
-        leftMotor.setPosition(distance.meters)
-        rightMotor.setPosition(distance.meters)
+    fun driveForward(){
+        curvatureDrive(.25,0.0,false)
 
     }
 
-    fun rotateInPlace(angle: Double) {
-        leftMotor.useMotionProfileForPosition = true
-        rightMotor.useMotionProfileForPosition = true
-        val arc = (2 * PI * (Constants.Drive.TRACK_WIDTH.inMeters() /2) * (angle/360)).meters
-        leftMotor.setPosition(leftMotor.encoder.position+arc)
-        rightMotor.setPosition(rightMotor.encoder.position-arc)
+    fun driveBackwards() {
+        curvatureDrive(-.25, 0.0, false)
+    }
 
+    fun rotateInPlace(angle: Double) {
+        if(!auto) resetEncoders()
+        val arc = (2 * PI * (Constants.Drive.TRACK_WIDTH.inMeters() / 2) * (angle/360)).meters
+        leftMotor.setPosition(arc)
+        rightMotor.setPosition(-arc)
+    }
+
+    fun rotateLeft() {
+        curvatureDrive(0.0, -.25, true)
+    }
+
+    fun rotateRight() {
+        curvatureDrive(0.0, .25, true)
+    }
+
+    fun stop() {
+        curvatureDrive(0.0, 0.0, false)
+    }
+
+    fun fullRotation() {
+//        resetEncoders()
+        rightMotor.setPosition(nativeUnitModel.fromNativeUnitPosition(17000.nativeUnits))
     }
 
     override val poseBuffer = TimePoseInterpolatableBuffer()
@@ -101,11 +132,17 @@ object Drive : FalconWestCoastDrivetrain() {
         val leftSlave = falconFX(Constants.Drive.LEFT_SLAVE_ID, Constants.Drive.NATIVE_UNIT_MODEL) {
             outputInverted = false
             brakeMode = true
+            useMotionProfileForPosition = true
+            motionProfileAcceleration = SIUnit(.5)
+            motionProfileCruiseVelocity = SIUnit(1.0)
             follow(leftMotor)
         }
         val rightSlave = falconFX(Constants.Drive.RIGHT_SLAVE_ID, Constants.Drive.NATIVE_UNIT_MODEL) {
             outputInverted = true
             brakeMode = true
+            useMotionProfileForPosition = true
+            motionProfileAcceleration = SIUnit(.5)
+            motionProfileCruiseVelocity = SIUnit(1.0)
             follow(rightMotor)
         }
 

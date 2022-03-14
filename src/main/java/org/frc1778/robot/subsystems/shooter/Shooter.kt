@@ -1,5 +1,7 @@
 package org.frc1778.robot.subsystems.shooter
 
+import edu.wpi.first.networktables.NetworkTable
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.robot.Constants
 import org.frc1778.robot.Constants.Shooter.NATIVE_ROTATION_MODEL
@@ -9,14 +11,35 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.motors.ctre.falconFX
+import org.ghrobotics.lib.wrappers.networktables.get
+import kotlin.math.pow
+import kotlin.math.tan
 
 object Shooter : FalconSubsystem() {
+    private val limeTable: NetworkTable = NetworkTableInstance.getDefault().getTable("limelight")
+    private val tx = limeTable["tx"]
+    private val tv = limeTable["tv"]
+    private val ty = limeTable["ty"]
+    private val ta = limeTable["ta"]
 
+    private var shooterAngle = Constants.debugTab2
+        .add("Angle", 0.0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .withPosition(1,1)
+        .withSize(1,1)
+        .entry
+
+    private var shooterVelocity = Constants.debugTab2
+        .add("Velocity", 0.0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .withPosition(1,1)
+        .withSize(1,1)
+        .entry
 
     private val shootAngle = SIUnit<Radian>(4.5)
-    private val velocity = SIUnit<Velocity<Radian>>(510.0)
+//    private val velocity = SIUnit<Velocity<Radian>>(510.0)
 
-    private val flywheelMotor = falconFX(Constants.Shooter.SHOOTER_FLYWHEEL, NATIVE_ROTATION_MODEL) {
+    val flywheelMotor = falconFX(Constants.Shooter.SHOOTER_FLYWHEEL, NATIVE_ROTATION_MODEL) {
         brakeMode = true
         outputInverted = false
 
@@ -36,18 +59,37 @@ object Shooter : FalconSubsystem() {
         flywheelMotor.setDutyCycle(percent)
     }
 
-    fun runShooter() {
+    fun runShooter(velocity: SIUnit<Velocity<Radian>>) {
         flywheelMotor.setVelocity(velocity)
     }
 
-    fun setAngle() {
-        angleAdjuster.setPosition(shootAngle)
+    fun setAngle(angle: SIUnit<Radian>) {
+        angleAdjuster.setPosition(angle)
+    }
+
+    fun shoot() {
+        var distance = ((104.0 - 23.5) / (tan((33.322 + ty.getDouble(0.0)) / 57.296)))
+        var (v, a) = Shooter.getSetPositions(distance)
+        shooterAngle.setDouble(a.value)
+        shooterVelocity.setDouble(v.value)
+        Shooter.runShooter(v)
+        Shooter.setAngle(a)
     }
 
     //TODO: !!! GET VALUES FOR SHOOTER !!!
-//    fun getSetPositions(distance: Double): Pair<Double, SIUnit<Radian>> {
-//        return Pair(0.0, SIUnit(0.0))
-//    }
+    fun getSetPositions(distance: Double): Pair<SIUnit<Velocity<Radian>>, SIUnit<Radian>> {
+        var v: SIUnit<Velocity<Radian>>
+        if(distance < 90) {
+             v = SIUnit(((0.0004 * distance.pow(3)) - (0.1097 * distance.pow(2)) + (11.759 * distance) + 39.691) + 3.5)
+        } else {
+            v = SIUnit(((8E-06 * distance.pow(4)) - (0.0036 * distance.pow(3)) +( 0.6363 * distance.pow(2)) - (47.269 * distance) + 1692.7) + 10.0)
+        }
+        if(v.value > 900.0) v = SIUnit(v.value * 0.575)
+
+        val a: SIUnit<Radian> = SIUnit((-(7.324605E-9 * distance.pow(4)) + (4.4445282E-6 * distance.pow(3)) - (9.211335E-4 * distance.pow(2)) + (.1009318946 * distance) - .078396) + .125)
+        return Pair(v, a)
+
+    }
 
 
 

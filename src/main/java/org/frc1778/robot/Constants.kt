@@ -2,6 +2,8 @@ package org.frc1778.robot
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
+import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
@@ -9,6 +11,7 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 
 object Constants {
     val debugTab2: ShuffleboardTab = Shuffleboard.getTab("Debug2")
+    val autoTab = Shuffleboard.getTab("Auto Stuff")
 
     object Drive {
         const val LEFT_MASTER_ID = 2
@@ -19,7 +22,10 @@ object Constants {
         private val WHEEL_RADIUS = 3.inches
         val TRACK_WIDTH = 23.inches
 
-        val NATIVE_UNIT_MODEL = NativeUnitLengthModel(2048.nativeUnits, WHEEL_RADIUS)
+        val speed = 4.feet //Speed in feet/sec
+        val rotSpeed = 185.degrees //
+
+        val NATIVE_UNIT_MODEL = NativeUnitLengthModel(17000.nativeUnits, WHEEL_RADIUS)
     }
 
     object Shooter {
