@@ -8,9 +8,11 @@ import org.ghrobotics.lib.mathematics.units.derived.Radian
 
 class Turn(private val angle: SIUnit<Radian>, cumulativeTime: Double) : PathSegment() {
 
+
     override var timeToComplete = cumulativeTime + (angle / Constants.Drive.rotSpeed.value).value
+
     override fun execute(timer: Timer): Boolean {
-        return if(timer.get() < timeToComplete) {
+        return if(timer.get() <= timeToComplete) {
             if(angle.value > 0) {
                 Drive.rotateRight()
             } else if(angle.value < 0) {

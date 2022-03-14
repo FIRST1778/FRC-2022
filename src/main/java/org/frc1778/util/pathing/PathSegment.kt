@@ -5,7 +5,6 @@ import kotlin.properties.Delegates
 
 
 abstract class PathSegment() {
-    abstract var endTime: Double
     abstract var timeToComplete: Double
     abstract fun execute(timer: Timer): Boolean
 }

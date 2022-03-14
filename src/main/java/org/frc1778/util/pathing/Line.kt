@@ -26,7 +26,6 @@ class Line(private var length: Double, private var angle: SIUnit<Radian>, cumula
     }
 
     override var timeToComplete: Double = cumulativeTime + turn.timeToComplete + (length / Constants.Drive.speed.value)
-    override var endTime = cumulativeTime + timeToComplete
 //    constructor(x: Double, y: Double) : this(sqrt((x - 0.0).pow(2) + (y - 0.0).pow(2)), SIUnit<Radian>(atan(x/y)))
 
 
@@ -35,7 +34,7 @@ class Line(private var length: Double, private var angle: SIUnit<Radian>, cumula
         return if(!turnComplete) {
             if(turn.execute(timer)) turnComplete = true
             false
-        } else if(timer.get() < timeToComplete) {
+        } else if(timer.get() <= timeToComplete) {
             if(length > 0) {
                 Drive.driveForward()
             } else if(length < 0) {
