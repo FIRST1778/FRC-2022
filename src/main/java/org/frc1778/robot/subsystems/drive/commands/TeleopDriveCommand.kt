@@ -28,37 +28,18 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
     private val Tx = Constants.debugTab2
         .add("Tx", 0)
         .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(1, 0)
-        .withSize(1, 1)
         .entry
 
     private val limeDistance = Constants.debugTab2
         .add("Distance", 0)
         .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(1, 0)
-        .withSize(1, 1)
         .entry
 
     private val Ty = Constants.debugTab2
         .add("Ty", 0)
         .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(5, 0)
-        .withSize(1, 1)
         .entry
 
-    private val Tv = Constants.debugTab2
-        .add("Target?", false)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(2, 0)
-        .withSize(1, 1)
-        .entry
-
-    private val DriveEncoder = Constants.debugTab2
-        .add("Drive Encoder", 0.0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(1, 3)
-        .withSize(1,1)
-        .entry
 
 
 
@@ -66,24 +47,23 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
     override fun execute() {
         Tx.setDouble(tx.getDouble(0.0))
         Ty.setDouble(ty.getDouble(0.0))
-        Tv.setBoolean(tv.getBoolean(false))
-        DriveEncoder.setDouble(Drive.encoder.rawPosition.value)
         //distance in feet
-        val distance = ((104.0 - 23.5) / (tan((33.322 + ty.getDouble(0.0)) / 57.296))).inches
-        limeDistance.setDouble(distance.value * 39.37)
+        val distance = ((104.0 - 23.5) / (tan((33.322 + ty.getDouble(0.0)) / 57.296)))
+        limeDistance.setDouble(distance)
 
-        ledMode.setDouble(3.0)
         if(!Drive.auto) {
             if ((!limeSource() || ta.getDouble(0.0) < 0.0)) {
                 Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
             } else {
-                ledMode.setDouble(3.0)
-                Drive.rotateInPlace(tx.getDouble(0.0)+1.875)
+                if(tx.getDouble(0.0) > if(distance > 135) 1.80 else 2.55) {
+                    Drive.curvatureDrive(0.0, .075, true)
+                } else if(tx.getDouble(0.0) < if(distance > 135) 1.70 else 2.45) {
+                    Drive.curvatureDrive(0.0, 7.5, true)
+                } else  {
+                    Drive.stop()
+                }
             }
 
-        } else {
-//            Drive.drive(1.0)
-//            Drive.rotateInPlace(90.0)
         }
     }
     companion object {
@@ -91,6 +71,5 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
         val turnSource = Controls.driverController.getRawAxis(2)
         val quickTurnSource = Controls.driverController.getRawButton(2)
         val limeSource = Controls.driverController.getRawButton(1)
-        val wheelFullRotationSource = Controls.driverController.getRawButton(2)
     }
 }

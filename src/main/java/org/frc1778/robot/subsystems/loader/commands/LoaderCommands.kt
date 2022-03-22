@@ -10,14 +10,12 @@ open class LoaderCommands : FalconCommand(Loader){
     override fun execute() {
         if(!Drive.auto) {
             Loader.runMain(if (mainSource()) .20 else if (reverse()) -.15 else 0.0)
-//            Loader.runLoader(if (loaderSource()) 0.15 else 0.0)
             Loader.backUpLoader(if(backUpLoaderSource()) 0.15 else 0.0)
         }
     }
     companion object {
         var mainSource = Controls.operatorController.getRawButton(1)
         var reverse = Controls.operatorController.getRawButton(4)
-//        var loaderSource = Controls.operatorController.getRawButton(1)
         var backUpLoaderSource = Controls.operatorController.getRawButton(6)
     }
 }

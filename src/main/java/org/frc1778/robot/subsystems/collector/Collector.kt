@@ -22,17 +22,16 @@ object Collector : FalconSubsystem() {
     }
 
 
-    val deployMotor = falconFX(Constants.Collector.DEPLOY_MOTOR, DefaultNativeUnitModel) {
+    val deployMotor = falconFX(Constants.Collector.DEPLOY_MOTOR, Constants.Collector.NATIVE_ROTATION_MODEL) {
         brakeMode = true
         outputInverted = false
         useMotionProfileForPosition = true
-        motionProfileCruiseVelocity = SIUnit(5500.0)
-        motionProfileAcceleration = SIUnit(18000.0)
+        motionProfileCruiseVelocity = SIUnit(14.5)
+        motionProfileAcceleration = SIUnit(100.0)
     }
 
-    val rotationModel = Constants.Collector.NATIVE_ROTATION_MODEL
 
-    private var collectorDown = false
+    var collectorDown = false
 
     fun runCollector(percent: Double) {
         if(collectorDown) miniLeftMaster.setDutyCycle(percent)
@@ -40,11 +39,23 @@ object Collector : FalconSubsystem() {
 
     fun toggleCollector() {
         collectorDown = if(!collectorDown) {
-            deployMotor.setPosition(rotationModel.toNativeUnitPosition(SIUnit(9.5)))
+            deployMotor.setPosition(SIUnit(9.5))
             true
         } else {
-            deployMotor.setPosition(rotationModel.toNativeUnitPosition(SIUnit(0.0)))
+            deployMotor.setPosition(SIUnit(0.0))
             false
+        }
+    }
+
+    fun lift() {
+        if(collectorDown) {
+            deployMotor.setPosition(SIUnit(8.75))
+        }
+    }
+
+    fun lower() {
+        if(collectorDown) {
+            deployMotor.setPosition(SIUnit(9.5))
         }
     }
 

@@ -28,19 +28,11 @@ open class ShootCommand : FalconCommand(Shooter) {
 
     private var shooterCurrVelocity = Constants.debugTab2
         .add("Current Velocity", 0.0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(1,1)
-        .withSize(1,1)
+        .withWidget(BuiltInWidgets.kGraph)
         .entry
 
 
 
-    private var shooterTemp = Constants.debugTab2
-        .add("Shooter Temp", 0.0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(1,1)
-        .withSize(1,1)
-        .entry
 
     override fun execute() {
         if(!Drive.auto) {
@@ -50,7 +42,9 @@ open class ShootCommand : FalconCommand(Shooter) {
             if (getRunShooter()) {
                 Shooter.shoot()
 //                Shooter.setAngle(SIUnit(.0))
-            } else Shooter.runShooter(0.0)
+            } else {
+                Shooter.runShooter(0.0)
+            }
 
 //            if(!buttonLast) {
 //                setAngle += if(setAngleBack() > .35 && setAngle > 0.0) -.25 else if(setAngleForward() > .35 && setAngle < 9.0) .25 else 0.0
@@ -59,7 +53,6 @@ open class ShootCommand : FalconCommand(Shooter) {
 //            }
 //            buttonLast = setAngleBack() >.35 || setAngleForward() > .35
         }
-//        shooterTemp.setDouble(Shooter.flywheelMotor)
     }
 
     companion object {

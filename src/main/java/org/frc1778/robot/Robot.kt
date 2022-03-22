@@ -1,6 +1,9 @@
 package org.frc1778.robot
 
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.team4069.keigen.mat
 import org.frc1778.robot.subsystems.climber.Climber
 import org.frc1778.robot.subsystems.collector.Collector
@@ -10,12 +13,10 @@ import org.frc1778.robot.subsystems.loader.Loader
 import org.frc1778.robot.subsystems.shooter.Shooter
 import org.frc1778.util.pathing.Line
 import org.frc1778.util.pathing.Path
+import org.frc1778.util.pathing.Turn
 import org.frc1778.util.pathing.events.*
-import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.degrees
-import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.inMeters
-import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 
 /**
@@ -30,8 +31,12 @@ import org.ghrobotics.lib.wrappers.FalconTimedRobot
  */
 object Robot : FalconTimedRobot()
 {
-    val matchTimer = Timer()
-    val autoPath = Path()
+    private var matchTimer = Timer()
+    private val autoPath1 = Path()
+    private val autoPath2 = Path()
+    private val autoPath3 = Path()
+    private lateinit var auto: Path
+
 
     init {
         +Shooter
@@ -40,22 +45,14 @@ object Robot : FalconTimedRobot()
         +Collector
         +Loader
 
-        autoPath.run {
-            add(Line(2.feet.value, 45.degrees, 0.0))
-            add(CollectorDown())
-            add(CollectorOn())
-            add(Wait(.1, path[0].endTime))
-            add(Line(1.2.feet.value, 15.degrees , path[3].endTime))
-            add(CollectorOff())
-            add(CollectorUp())
-        }
+
     }
 
-//    private var selectedAutoMode = AutoMode.default
-//    private val autoModeChooser = SendableChooser<AutoMode>().also { chooser ->
-//        AutoMode.values().forEach { chooser.addOption(it.optionName, it) }
-//        chooser.setDefaultOption(AutoMode.default.optionName, AutoMode.default)
-//    }
+    private var selectedAutoMode = AutoMode.default
+    private val autoModeChooser = SendableChooser<AutoMode>().also { chooser ->
+        AutoMode.values().forEach { chooser.addOption(it.optionName, it) }
+        chooser.setDefaultOption(AutoMode.default.optionName, AutoMode.default)
+    }
 
     /**
      * A enumeration of the available autonomous modes.
@@ -64,19 +61,20 @@ object Robot : FalconTimedRobot()
      * @param periodicFunction The function that is called in the [autonomousPeriodic] function each time it is called.
      * @param autoInitFunction An optional function that is called in the [autonomousInit] function.
      */
-//    private enum class AutoMode(val optionName: String,
-//                                val periodicFunction: () -> Unit,
-//                                val autoInitFunction: () -> Unit = { /* No op by default */ } )
-//    {
-//        CUSTOM_AUTO_1("Custom Auto Mode 1", ::autoMode1),
-//        CUSTOM_AUTO_2("Custom Auto Mode 2", ::autoMode2),
-//        ;
-//        companion object
-//        {
-//            /** The default auto mode. */
-//            val default = CUSTOM_AUTO_1
-//        }
-//    }
+    private enum class AutoMode(val optionName: String,
+                                val periodicFunction: () -> Unit = {        },
+                                val autoInitFunction: () -> Unit = { /* No op by default */ } )
+    {
+        CUSTOM_AUTO_1("4 Ball?", ::autoMode1, ::autoMode1),
+        CUSTOM_AUTO_2("2 Ball", ::autoMode2, ::autoMode2),
+        CUSTOM_AUTO_3("1 Ball", ::autoMode3, ::autoMode3)
+        ;
+        companion object
+        {
+            /** The default auto mode. */
+            val default = CUSTOM_AUTO_1
+        }
+    }
 
     /**
      * This method is run when the robot is first started up and should be used for any
@@ -84,7 +82,7 @@ object Robot : FalconTimedRobot()
      */
     override fun robotInit()
     {
-//        SmartDashboard.putData("Auto choices", autoModeChooser)
+        SmartDashboard.putData("Auto choices", autoModeChooser)
     }
 
     /**
@@ -97,12 +95,107 @@ object Robot : FalconTimedRobot()
     override fun robotPeriodic() {}
 
     override fun autonomousInit() {
+        matchTimer = Timer()
         Drive.auto = true
         Drive.resetEncoders()
         matchTimer.start()
+        autoPath1.currSegment = 0
         Climber.winchMotorRight.encoder.resetPosition(SIUnit(0.0))
         Shooter.angleEncoder.resetPosition(SIUnit(0.0))
-        Collector.deployMotor.encoder.resetPosition(SIUnit(0.0))
+
+
+        autoPath1.run {
+            add(CollectorDown())
+            add(Wait(.35, 0.0))
+            add(CollectorOn())
+            add(Line(41.inches.value, 0.degrees, autoPath1.getLastTime()))
+//            add(Line((-12).inches.value, 0.degrees, autoPath.path[3].timeToComplete))
+            add(Turn((-220.5).degrees, autoPath1.getLastTime()))
+            add(Stop()) //6
+//
+////Shoot
+            add(CollectorOff())
+            add(Wait(.45, autoPath1.getLastTime()))
+            add(ShooterOn())
+            add(Wait(.95, autoPath1.getLastTime()))
+            add(LoaderOn()) //10
+            add(Wait(.1, autoPath1.getLastTime()))
+            add(LoaderOff())
+            add(Wait(.1, autoPath1.getLastTime()))
+            add(CollectorOn())
+            add(Wait(.15, autoPath1.getLastTime()))
+            add(LoaderOn())
+            add(Wait(.2, autoPath1.getLastTime()))
+            add(LoaderOff())
+            add(ShooterOff())
+            add(CollectorOff())
+            add(CollectorOn())
+//
+//            add(Line(87.5.inches.value, (-75.7).degrees, autoPath1.getLastTime()))
+////
+//            add(Line(156.7.inches.value, (-54).degrees, autoPath1.getLastTime()))
+//            add(Line(120.inches.value, 165.degrees, autoPath1.getLastTime()))
+////
+//////Shoot
+//            add(CollectorOff())
+//            add(ShooterOn())
+//            add(Wait(.95, autoPath1.getLastTime()))
+//            add(LoaderOn()) //10
+//            add(Wait(.1, autoPath1.getLastTime()))
+//            add(LoaderOff())
+//            add(Wait(.1, autoPath1.getLastTime()))
+//            add(CollectorOn())
+//            add(Wait(.15, autoPath1.getLastTime()))
+//            add(LoaderOn())
+//            add(Wait(.2, autoPath1.getLastTime()))
+//            add(LoaderOff())
+//            add(ShooterOff())
+//            add(CollectorOff())
+//            add(CollectorOn())
+
+        }
+
+        autoPath2.run {
+            add(CollectorDown())
+            add(Wait(.35, 0.0))
+            add(CollectorOn())
+            add(Line(50.inches.value, 0.degrees, autoPath2.getLastTime()))
+            add(Turn(180.degrees, autoPath2.getLastTime()))
+            add(Stop())
+
+            //Shoot
+            add(CollectorOff())
+            add(ShooterOn())
+            add(Wait(.95, autoPath1.getLastTime()))
+            add(LoaderOn())
+            add(Wait(.1, autoPath1.getLastTime()))
+            add(LoaderOff())
+            add(Wait(.1, autoPath1.getLastTime()))
+            add(CollectorOn())
+            add(Wait(.15, autoPath1.getLastTime()))
+            add(LoaderOn())
+            add(Wait(.2, autoPath1.getLastTime()))
+            add(LoaderOff())
+            add(ShooterOff())
+            add(CollectorOff())
+            add(CollectorOn())
+
+        }
+
+        autoPath3.run {
+            add(Line(-50.inches.value, 0.degrees, 0.0))
+            add(Stop())
+            add(Aim())
+            add(Wait(.35, autoPath3.getLastTime()))
+            add(ShooterOn())
+            add(Wait(1.25, autoPath3.getLastTime()))
+            add(LoaderOn())
+            add(Wait(.45, autoPath3.getLastTime()))
+            add(LoaderOff())
+            add(ShooterOff())
+        }
+
+
 //        Shooter.setAngle()
         /* This autonomousInit function (along with the initAutoChooser function) shows how to select
         between different autonomous modes using the dashboard. The sendable chooser code works with the
@@ -111,16 +204,16 @@ object Robot : FalconTimedRobot()
 
         If you prefer the LabVIEW Dashboard, remove all the chooser code and uncomment the following line: */
         //selectedAutoMode = AutoMode.valueOf(SmartDashboard.getString("Auto Selector", AutoMode.default.name))
-//        selectedAutoMode = autoModeChooser.selected ?: AutoMode.default
-//        println("Selected auto mode: ${selectedAutoMode.optionName}")
-//        selectedAutoMode.autoInitFunction.invoke()
+        selectedAutoMode = autoModeChooser.selected ?: AutoMode.default
+        println("Selected auto mode: ${selectedAutoMode.optionName}")
+        selectedAutoMode.autoInitFunction.invoke()
     }
 
     /** This method is called periodically during autonomous.  */
     override fun autonomousPeriodic() {
 
-        autoPath.runPath(matchTimer)
-
+        auto.runPath(matchTimer)
+//        Drive.stop()
 
 
 //        val rot = 180.degrees
@@ -162,21 +255,26 @@ object Robot : FalconTimedRobot()
 //        Drive.rotateInPlace(90.0)
     }
 
-//    private fun autoMode1()
-//    {
-//        TODO("Write custom auto mode 1")
-//    }
-//
-//    private fun autoMode2()
-//    {
-//        TODO("Write custom auto mode 2")
-//    }
+    private fun autoMode1()
+    {
+        auto = autoPath1
+    }
+
+    private fun autoMode2()
+    {
+        auto = autoPath2
+    }
+
+    private fun autoMode3() {
+        auto = autoPath3
+    }
 
     /** This method is called once when teleop is enabled.  */
     override fun teleopInit() {
         Drive.auto = false
         Shooter.setAngle(SIUnit(.0))
-        Collector.deployMotor.setPosition(SIUnit(-9.5))
+//        Climber.winchMotorRight.encoder.resetPosition(SIUnit(0.0))
+        Collector.deployMotor.setPosition(SIUnit(0.0))
 
     }
 

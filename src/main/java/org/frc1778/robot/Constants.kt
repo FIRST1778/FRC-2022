@@ -10,8 +10,7 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 
 object Constants {
-    val debugTab2: ShuffleboardTab = Shuffleboard.getTab("Debug2")
-    val autoTab = Shuffleboard.getTab("Auto Stuff")
+    val debugTab2: ShuffleboardTab = Shuffleboard.getTab("TeleOp Info")
 
     object Drive {
         const val LEFT_MASTER_ID = 2

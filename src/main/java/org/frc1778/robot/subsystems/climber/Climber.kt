@@ -12,12 +12,6 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.motors.rev.falconMAX
 
 object Climber : FalconSubsystem() {
-    private val climberSetPosition = debugTab2
-        .add("Climber Set Position", 0.0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(0, 3)
-        .withSize(1,1)
-        .entry
 
     val winchMotorRight = falconMAX(Constants.Climber.CLIMBER_MOTOR_RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
         brakeMode = true

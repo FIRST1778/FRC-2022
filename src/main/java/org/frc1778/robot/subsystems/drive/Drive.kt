@@ -24,12 +24,6 @@ import kotlin.math.PI
 object Drive : FalconWestCoastDrivetrain() {
 
 
-    val driveSetDistance = Constants.debugTab2
-        .add("Set Drive Distance", 0.0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withPosition(1, 3)
-        .withSize(1,1)
-        .entry
 
     override val controller: RamseteController
         get() = RamseteController(2.0, 0.7)
@@ -67,26 +61,16 @@ object Drive : FalconWestCoastDrivetrain() {
         motionProfileCruiseVelocity = SIUnit(1.0)
     }
 
-    val encoder = rightMotor.encoder
 
-    private val arcTab = Constants.debugTab2
-        .add("Arc", 0.0)
-        .withWidget(BuiltInWidgets.kTextView)
-        .withSize(1,1)
-        .withPosition(0, 3)
-        .entry
-
-        fun resetEncoders() {
+    fun resetEncoders() {
         rightMotor.encoder.resetPosition(SIUnit(0.0))
         leftMotor.encoder.resetPosition(SIUnit(0.0))
-
     }
 
 
     var auto = true
     fun driveForward(){
         curvatureDrive(.25,0.0,false)
-
     }
 
     fun driveBackwards() {
@@ -112,10 +96,6 @@ object Drive : FalconWestCoastDrivetrain() {
         curvatureDrive(0.0, 0.0, false)
     }
 
-    fun fullRotation() {
-//        resetEncoders()
-        rightMotor.setPosition(nativeUnitModel.fromNativeUnitPosition(17000.nativeUnits))
-    }
 
     override val poseBuffer = TimePoseInterpolatableBuffer()
 

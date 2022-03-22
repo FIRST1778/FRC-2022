@@ -7,7 +7,8 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 
 class CollectorUp: Event() {
     override fun execute(timer: Timer): Boolean {
-        Collector.deployMotor.setPosition(SIUnit(-9.5))
+        Collector.deployMotor.setPosition(SIUnit(0.0))
+        Collector.collectorDown = false
         return true
     }
 }

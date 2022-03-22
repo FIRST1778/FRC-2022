@@ -27,7 +27,7 @@ object Loader : FalconSubsystem() {
         outputInverted = false
     }
 
-    private val loaderLineBreakSensor = DigitalInput(1 )
+    val loaderLineBreakSensor = DigitalInput(1 )
 
     fun runMain(percent: Double) {
         mainMotor.setDutyCycle(if(loaderLineBreakSensor.get() || percent < 0.0) percent else 0.0)
