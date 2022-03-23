@@ -36,4 +36,8 @@ class Curve(private val x: Double, private val y: Double, endAngle: SIUnit<Radia
         return false
     }
 
+    override fun initialize(cumulativeTime: Double) {
+        TODO("Not yet implemented")
+    }
+
 }

@@ -105,31 +105,31 @@ object Robot : FalconTimedRobot()
 
 
         autoPath1.run {
-            add(CollectorDown())
-            add(Wait(.35, 0.0))
-            add(CollectorOn())
-            add(Line(41.inches.value, 0.degrees, autoPath1.getLastTime()))
+            add(CollectorDown)
+            add(Wait(.35))
+            add(CollectorOn)
+            add(Line(41.inches.value, 0.degrees))
 //            add(Line((-12).inches.value, 0.degrees, autoPath.path[3].timeToComplete))
-            add(Turn((-220.5).degrees, autoPath1.getLastTime()))
-            add(Stop()) //6
+            add(Turn((-220.5).degrees))
+            add(Stop) //6
 //
 ////Shoot
-            add(CollectorOff())
-            add(Wait(.45, autoPath1.getLastTime()))
-            add(ShooterOn())
-            add(Wait(.95, autoPath1.getLastTime()))
-            add(LoaderOn()) //10
-            add(Wait(.1, autoPath1.getLastTime()))
-            add(LoaderOff())
-            add(Wait(.1, autoPath1.getLastTime()))
-            add(CollectorOn())
-            add(Wait(.15, autoPath1.getLastTime()))
-            add(LoaderOn())
-            add(Wait(.2, autoPath1.getLastTime()))
-            add(LoaderOff())
-            add(ShooterOff())
-            add(CollectorOff())
-            add(CollectorOn())
+            add(CollectorOff)
+            add(Wait(.45))
+            add(ShooterOn)
+            add(Wait(.95))
+            add(LoaderOn) //10
+            add(Wait(.1))
+            add(LoaderOff)
+            add(Wait(.1))
+            add(CollectorOn)
+            add(Wait(.15))
+            add(LoaderOn)
+            add(Wait(.2))
+            add(LoaderOff)
+            add(ShooterOff)
+            add(CollectorOff)
+            add(CollectorOn)
 //
 //            add(Line(87.5.inches.value, (-75.7).degrees, autoPath1.getLastTime()))
 ////
@@ -156,43 +156,43 @@ object Robot : FalconTimedRobot()
         }
 
         autoPath2.run {
-            add(CollectorDown())
-            add(Wait(.35, 0.0))
-            add(CollectorOn())
-            add(Line(50.inches.value, 0.degrees, autoPath2.getLastTime()))
-            add(Turn(180.degrees, autoPath2.getLastTime()))
-            add(Stop())
+            add(CollectorDown)
+            add(Wait(.3))
+            add(CollectorOn)
+            add(Line(50.inches.value, 0.degrees))
+            add(Turn(180.degrees))
+            add(Stop)
 
             //Shoot
-            add(CollectorOff())
-            add(ShooterOn())
-            add(Wait(.95, autoPath1.getLastTime()))
-            add(LoaderOn())
-            add(Wait(.1, autoPath1.getLastTime()))
-            add(LoaderOff())
-            add(Wait(.1, autoPath1.getLastTime()))
-            add(CollectorOn())
-            add(Wait(.15, autoPath1.getLastTime()))
-            add(LoaderOn())
-            add(Wait(.2, autoPath1.getLastTime()))
-            add(LoaderOff())
-            add(ShooterOff())
-            add(CollectorOff())
-            add(CollectorOn())
+            add(CollectorOff)
+            add(ShooterOn)
+            add(Wait(.95))
+            add(LoaderOn)
+            add(Wait(.1))
+            add(LoaderOff)
+            add(Wait(.1))
+            add(CollectorOn)
+            add(Wait(.15))
+            add(LoaderOn)
+            add(Wait(.2))
+            add(LoaderOff)
+            add(ShooterOff)
+            add(CollectorOff)
+            add(CollectorOn)
 
         }
 
         autoPath3.run {
-            add(Line(-50.inches.value, 0.degrees, 0.0))
-            add(Stop())
-            add(Aim())
-            add(Wait(.35, autoPath3.getLastTime()))
-            add(ShooterOn())
-            add(Wait(1.25, autoPath3.getLastTime()))
-            add(LoaderOn())
-            add(Wait(.45, autoPath3.getLastTime()))
-            add(LoaderOff())
-            add(ShooterOff())
+            add(Line(-50.inches.value, 0.degrees))
+            add(Stop)
+            add(Aim)
+            add(Wait(.35))
+            add(ShooterOn)
+            add(Wait(1.25))
+            add(LoaderOn)
+            add(Wait(.45))
+            add(LoaderOff)
+            add(ShooterOff)
         }
 
 
@@ -213,17 +213,6 @@ object Robot : FalconTimedRobot()
     override fun autonomousPeriodic() {
 
         auto.runPath(matchTimer)
-//        Drive.stop()
-
-
-//        val rot = 180.degrees
-//        val timeToComplete = (rot/Constants.Drive.rotSpeed.value).value
-//
-//        if(matchTimer.get() < timeToComplete) {
-//            Drive.rotateRight()
-//        } else {
-//            Drive.curvatureDrive(0.0, 0.0, false)
-//        }
 
 
 
@@ -250,9 +239,6 @@ object Robot : FalconTimedRobot()
 //            Drive.curvatureDrive(0.0, 0.0, false)
 //        }
 
-//        Drive.resetEncoders()
-//        Drive.drive(1.0)
-//        Drive.rotateInPlace(90.0)
     }
 
     private fun autoMode1()

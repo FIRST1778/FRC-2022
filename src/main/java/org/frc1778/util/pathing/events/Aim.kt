@@ -9,12 +9,10 @@ import org.ghrobotics.lib.wrappers.networktables.get
 import kotlin.math.tan
 
 /**
- * Aims at target using limelight.
- * Because it has no ending time it is a final command.
- * With a rework of the timing system it may be viable as a non-final command in the future
- * @constructor Create empty Aim
+ * Event that aims at target using limelight.
  */
-class Aim : Event() {
+
+object Aim : Event() {
     private val limeTable: NetworkTable = NetworkTableInstance.getDefault().getTable("limelight")
     private val tx = limeTable["tx"]
     private val ty = limeTable["ty"]

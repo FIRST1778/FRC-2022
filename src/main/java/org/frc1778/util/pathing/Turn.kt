@@ -6,11 +6,18 @@ import org.frc1778.robot.subsystems.drive.Drive
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import kotlin.math.abs
+import kotlin.properties.Delegates
 
-class Turn(private val angle: SIUnit<Radian>, cumulativeTime: Double) : PathSegment() {
+/**
+ * Turn in place a certain number of degrees. Negative turns left, positive turns right
+ *
+ * @property angle
+ * @constructor Create turn for angle degrees
+ */
+class Turn(private val angle: SIUnit<Radian>) : PathSegment() {
 
 
-    override var timeToComplete = cumulativeTime + (abs(angle.value) / Constants.Drive.rotSpeed.value)
+    override var timeToComplete by Delegates.notNull<Double>()
 
     override fun execute(timer: Timer): Boolean {
         return if(timer.get() < timeToComplete) {
@@ -24,5 +31,9 @@ class Turn(private val angle: SIUnit<Radian>, cumulativeTime: Double) : PathSegm
             Drive.stop()
             true
         }
+    }
+
+    override fun initialize(cumulativeTime: Double) {
+        timeToComplete = cumulativeTime + (abs(angle.value) / Constants.Drive.rotSpeed.value)
     }
 }
