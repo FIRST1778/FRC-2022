@@ -18,11 +18,8 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
 
     private val limeTable: NetworkTable = NetworkTableInstance.getDefault().getTable("limelight")
     private val tx = limeTable["tx"]
-    private val tv = limeTable["tv"]
     private val ty = limeTable["ty"]
     private val ta = limeTable["ta"]
-    private val ledMode = limeTable["ledMode"]
-    private val targetDistance = 3
 
 
     private val Tx = Constants.debugTab2
@@ -55,10 +52,10 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
             if ((!limeSource() || ta.getDouble(0.0) < 0.0)) {
                 Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
             } else {
-                if(tx.getDouble(0.0) > if(distance > 135) 1.80 else 2.55) {
-                    Drive.curvatureDrive(0.0, .075, true)
-                } else if(tx.getDouble(0.0) < if(distance > 135) 1.70 else 2.45) {
-                    Drive.curvatureDrive(0.0, 7.5, true)
+                if(tx.getDouble(0.0) > if(distance > 135) 1.95 else 2.7) {
+                    Drive.curvatureDrive(0.0, if(tx.getDouble(0.0) > if(distance > 135) 3.75 else 4.5) 0.085 else .02, true)
+                } else if(tx.getDouble(0.0) < if(distance > 135) 1.55 else 2.3) {
+                    Drive.curvatureDrive(0.0, if(tx.getDouble(0.0) < if(distance > 135) 1.55 else -.5) -0.085 else -.02, true)
                 } else  {
                     Drive.stop()
                 }

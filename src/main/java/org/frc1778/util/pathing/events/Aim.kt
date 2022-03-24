@@ -21,11 +21,11 @@ class Aim : Event() {
 
     override fun execute(timer: Timer): Boolean {
         val distance = ((104.0 - 23.5) / (tan((33.322 + ty.getDouble(0.0)) / 57.296)))
-        return if(tx.getDouble(0.0) > if(distance > 135) 1.80 else 2.55) {
-            Drive.curvatureDrive(0.0, .075, true)
+        return if(tx.getDouble(0.0) > if(distance > 135) 1.95 else 2.7) {
+            Drive.curvatureDrive(0.0, if(tx.getDouble(0.0) > if(distance > 135) 3.75 else 4.5) 0.085 else .02, true)
             false
-        } else if(tx.getDouble(0.0) < if(distance > 135) 1.70 else 2.45) {
-            Drive.curvatureDrive(0.0, 7.5, true)
+        } else if(tx.getDouble(0.0) < if(distance > 135) 1.55 else 2.3) {
+            Drive.curvatureDrive(0.0, if(tx.getDouble(0.0) < if(distance > 135) 1.55 else -.5) -0.085 else -.02, true)
             false
         } else  {
             Drive.stop()
