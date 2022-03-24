@@ -1,35 +1,27 @@
 package org.frc1778.util.pathing
 
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.robot.Constants
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.frc1778.robot.subsystems.drive.Drive
-import org.ghrobotics.lib.mathematics.units.inFeet
 import kotlin.math.*
 import kotlin.properties.Delegates
 
 
+/**
+ * Line movement of length in meters at angle direction in radians
+ *
+ * @property length
+ * @property angle
+ * @constructor Create a line of length meters at angle direction in radians
+ */
+class Line(private var length: Double, private var angle: SIUnit<Radian>) : PathSegment(){
 
+    private lateinit var turn: Turn
+    private var turnComplete = false
 
-
-
-class Line(private var length: Double, private var angle: SIUnit<Radian>, cumulativeTime: Double) : PathSegment(){
-
-    private var turn: Turn
-    var turnComplete = false
-
-    init {
-        turn = Turn(angle, cumulativeTime)
-
-
-    }
-
-    override var timeToComplete: Double = turn.timeToComplete + (abs(length) / Constants.Drive.speed.value)
-//    constructor(x: Double, y: Double) : this(sqrt((x - 0.0).pow(2) + (y - 0.0).pow(2)), SIUnit<Radian>(atan(x/y)))
-
-
+    override var timeToComplete by Delegates.notNull<Double>()
 
     override fun execute(timer: Timer): Boolean {
         return if(!turnComplete) {
@@ -53,6 +45,13 @@ class Line(private var length: Double, private var angle: SIUnit<Radian>, cumula
 
 
     }
+
+    override fun initialize(cumulativeTime: Double) {
+        turn = Turn(angle)
+        turn.initialize(cumulativeTime)
+        timeToComplete = turn.timeToComplete + (abs(length) / Constants.Drive.speed.value)
+    }
+
 
 
 }

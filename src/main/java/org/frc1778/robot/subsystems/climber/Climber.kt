@@ -1,16 +1,15 @@
 package org.frc1778.robot.subsystems.climber
 
 import com.revrobotics.CANSparkMaxLowLevel
-import edu.wpi.first.wpilibj.AnalogEncoder
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.robot.Constants
-import org.frc1778.robot.Constants.debugTab2
 import org.frc1778.robot.subsystems.climber.commands.ClimberCommands
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.motors.rev.falconMAX
 
+/**
+ * Climber subsystem
+ */
 object Climber : FalconSubsystem() {
 
     val winchMotorRight = falconMAX(Constants.Climber.CLIMBER_MOTOR_RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless, Constants.Climber.NATIVE_ROTATION_MODEL) {
@@ -29,12 +28,10 @@ object Climber : FalconSubsystem() {
     }
 
 
-    //TODO: Determine Deployed Hook Encoder Val
     fun deployHook2() {
         winchMotorRight.setPosition(SIUnit(deployedClimberEncoderValue))
     }
 
-    //TODO: Find correct position for maintained climb
     fun climbDown() {
         winchMotorRight.setPosition(SIUnit(0.0))
     }
@@ -42,6 +39,16 @@ object Climber : FalconSubsystem() {
     fun climb() {
         winchMotorRight.setPosition(SIUnit(-1.0))
     }
+
+    fun manualclimbUp() {
+        winchMotorRight.setPosition(winchMotorRight.encoder.position + SIUnit(.25))
+    }
+
+    fun manualclimbDown() {
+        winchMotorRight.setPosition(winchMotorRight.encoder.position - SIUnit(.25))
+    }
+
+
 
     init {
         winchMotorRight.encoder.resetPosition(SIUnit(0.0))
@@ -57,7 +64,6 @@ object Climber : FalconSubsystem() {
             outputInverted = false
             follow(winchMotorRight)
         }
-//        winchMotorLeft.follow(winchMotorRight)
 
         defaultCommand = ClimberCommands()
     }

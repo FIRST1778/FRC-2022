@@ -5,7 +5,11 @@ import org.frc1778.robot.subsystems.collector.Collector
 import org.frc1778.robot.subsystems.loader.Loader
 import org.frc1778.util.pathing.Event
 
-class CollectorOff: Event() {
+/**
+ * Turns the collector off
+ */
+
+object CollectorOff: Event() {
     override fun execute(timer: Timer): Boolean {
         Collector.runCollector(0.0)
         Loader.runMain(0.0)

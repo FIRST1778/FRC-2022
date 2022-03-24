@@ -5,7 +5,11 @@ import org.frc1778.robot.subsystems.collector.Collector
 import org.frc1778.util.pathing.Event
 import org.ghrobotics.lib.mathematics.units.SIUnit
 
-class CollectorDown: Event() {
+/**
+ * Puts to collector down
+ */
+
+object CollectorDown: Event() {
 
     override fun execute(timer: Timer): Boolean {
         Collector.deployMotor.setPosition(SIUnit(9.5))
