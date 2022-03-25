@@ -1,21 +1,18 @@
 package org.frc1778.robot.subsystems.collector.commands
 
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
-import org.frc1778.robot.Constants.debugTab2
 import org.frc1778.robot.Controls
 import org.frc1778.robot.subsystems.collector.Collector
 import org.frc1778.robot.subsystems.drive.Drive
 import org.ghrobotics.lib.commands.FalconCommand
-import org.ghrobotics.lib.mathematics.units.SIUnit
 
 
 var deployLast = true
-var firstExecute = true
+
 
 open class CollectorCommands : FalconCommand(Collector) {
 
     override fun execute() {
-        if(!Drive.auto) {
+        if(!Drive.Autonomous.auto) {
 
             if (!deployLast) {
                 if (deploySource()) Collector.toggleCollector()

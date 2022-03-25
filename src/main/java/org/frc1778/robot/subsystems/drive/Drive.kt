@@ -5,21 +5,13 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.robot.Constants
 import org.frc1778.robot.subsystems.drive.commands.TeleopDriveCommand
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.inMeters
-import org.ghrobotics.lib.mathematics.units.meters
-import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnit
-import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
-import org.ghrobotics.lib.mathematics.units.nativeunit.toNativeUnitPosition
 import org.ghrobotics.lib.motors.ctre.falconFX
 import org.ghrobotics.lib.subsystems.drive.FalconWestCoastDrivetrain
 import org.ghrobotics.lib.utils.Source
-import java.lang.annotation.Native
-import kotlin.math.PI
 
 object Drive : FalconWestCoastDrivetrain() {
 
@@ -28,7 +20,6 @@ object Drive : FalconWestCoastDrivetrain() {
     override val controller: RamseteController
         get() = RamseteController(2.0, 0.7)
 
-    private val nativeUnitModel = Constants.Drive.NATIVE_UNIT_MODEL
 
     override val gyro: Source<Rotation2d>
         get() = { Rotation2d() }
@@ -68,29 +59,34 @@ object Drive : FalconWestCoastDrivetrain() {
     }
 
 
-    var auto = true
-    fun driveForward(){
-        curvatureDrive(.25,0.0,false)
+    object Autonomous {
+        var auto = true
+        fun driveForward(){
+            curvatureDrive(.25,0.0,false)
+        }
+
+        fun driveBackwards() {
+            curvatureDrive(-.25, 0.0, false)
+        }
+
+
+        fun rotateLeft() {
+            curvatureDrive(0.0, -.25, true)
+        }
+
+        fun rotateRight() {
+            curvatureDrive(0.0, .25, true)
+        }
+
+        fun driveForwardsFast() {
+            curvatureDrive(.60, 0.0, false)
+        }
+
+        fun driveBackwardsFast() {
+            curvatureDrive(-.60, 0.0, false)
+        }
     }
 
-    fun driveBackwards() {
-        curvatureDrive(-.25, 0.0, false)
-    }
-
-    fun rotateInPlace(angle: Double) {
-        if(!auto) resetEncoders()
-        val arc = (2 * PI * (Constants.Drive.TRACK_WIDTH.inMeters() / 2) * (angle/360)).meters
-        leftMotor.setPosition(arc)
-        rightMotor.setPosition(-arc)
-    }
-
-    fun rotateLeft() {
-        curvatureDrive(0.0, -.25, true)
-    }
-
-    fun rotateRight() {
-        curvatureDrive(0.0, .25, true)
-    }
 
     fun stop() {
         curvatureDrive(0.0, 0.0, false)

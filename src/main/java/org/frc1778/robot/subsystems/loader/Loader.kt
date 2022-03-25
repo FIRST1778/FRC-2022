@@ -3,14 +3,12 @@ package org.frc1778.robot.subsystems.loader
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.wpilibj.DigitalInput
 import org.frc1778.robot.Constants
-import org.frc1778.robot.main
 import org.frc1778.robot.subsystems.loader.commands.LoaderCommands
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.motors.ctre.falconFX
 import org.ghrobotics.lib.motors.rev.falconMAX
 
-//TODO: Get Direction for all motors
 object Loader : FalconSubsystem() {
     private val mainMotor = falconFX(Constants.Loader.MAIN_WHEEL, DefaultNativeUnitModel) {
         brakeMode = true

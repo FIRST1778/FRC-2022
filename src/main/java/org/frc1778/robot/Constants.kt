@@ -22,7 +22,8 @@ object Constants {
         val TRACK_WIDTH = 23.inches
 
         val speed = 4.feet //Speed in feet/sec
-        val rotSpeed = 185.degrees //
+        val fastSpeed = 110.5.inches // Faster Speed in inches/sec
+        val rotSpeed = 185.degrees // Rotation speed in degrees/sec
 
         val NATIVE_UNIT_MODEL = NativeUnitLengthModel(17000.nativeUnits, WHEEL_RADIUS)
     }

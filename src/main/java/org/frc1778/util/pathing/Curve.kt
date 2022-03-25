@@ -3,9 +3,6 @@ package org.frc1778.util.pathing
 import edu.wpi.first.wpilibj.Timer
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
 
 class Curve(private val x: Double, private val y: Double, endAngle: SIUnit<Radian>, override var timeToComplete: Double): PathSegment() {
     private var points: ArrayList<Pair<Double, Double>> = ArrayList()

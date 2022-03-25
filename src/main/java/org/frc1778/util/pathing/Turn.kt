@@ -22,9 +22,9 @@ class Turn(private val angle: SIUnit<Radian>) : PathSegment() {
     override fun execute(timer: Timer): Boolean {
         return if(timer.get() < timeToComplete) {
             if(angle.value > 0) {
-                Drive.rotateRight()
+                Drive.Autonomous.rotateRight()
             } else if(angle.value < 0) {
-                Drive.rotateLeft()
+                Drive.Autonomous.rotateLeft()
             }
             false
         } else {

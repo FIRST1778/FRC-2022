@@ -40,12 +40,12 @@ object Climber : FalconSubsystem() {
         winchMotorRight.setPosition(SIUnit(-1.0))
     }
 
-    fun manualclimbUp() {
-        winchMotorRight.setPosition(winchMotorRight.encoder.position + SIUnit(.25))
+    fun manualClimbUp() {
+        winchMotorRight.setPosition(SIUnit(winchMotorRight.encoder.position.value - .25))
     }
 
-    fun manualclimbDown() {
-        winchMotorRight.setPosition(winchMotorRight.encoder.position - SIUnit(.25))
+    fun manualClimbDown() {
+        winchMotorRight.setPosition(SIUnit(winchMotorRight.encoder.position.value + .25))
     }
 
 

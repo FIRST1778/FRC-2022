@@ -14,6 +14,7 @@ class Path {
     private var path: ArrayList<PathSegment> = ArrayList()
     var currSegment = 0
 
+
     /**
      * Called periodically during autonomous
      *
@@ -22,9 +23,10 @@ class Path {
     fun runPath(timer: Timer) {
         if(!Loader.loaderLineBreakSensor.get() && !loaderOn) Loader.runMain(0.0)
         if(currSegment < path.size) {
+            if(currSegment == 0) path[currSegment].initialize(0.0)
             if (path[currSegment].execute(timer)) {
                 currSegment++
-                path[currSegment].initialize(timer.get())
+                if(currSegment < path.size) path[currSegment].initialize(timer.get())
             }
         } else {
             Drive.stop()

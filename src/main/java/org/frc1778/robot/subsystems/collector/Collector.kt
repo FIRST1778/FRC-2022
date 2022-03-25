@@ -47,17 +47,6 @@ object Collector : FalconSubsystem() {
         }
     }
 
-    fun lift() {
-        if(collectorDown) {
-            deployMotor.setPosition(SIUnit(8.75))
-        }
-    }
-
-    fun lower() {
-        if(collectorDown) {
-            deployMotor.setPosition(SIUnit(9.5))
-        }
-    }
 
     init {
         deployMotor.encoder.resetPosition(SIUnit(0.0))
