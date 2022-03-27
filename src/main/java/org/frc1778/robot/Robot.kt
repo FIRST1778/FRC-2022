@@ -1,5 +1,7 @@
 package org.frc1778.robot
 
+import com.pathplanner.lib.PathPlanner
+import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -40,6 +42,8 @@ object Robot : FalconTimedRobot()
     private val autoPath7 = Path()
     private val testAutoPath = Path()
     private lateinit var auto: Path
+    private lateinit var trajectoryTest: Trajectory
+    private var trajectory = false
 
 
     init {
@@ -76,7 +80,8 @@ object Robot : FalconTimedRobot()
         CUSTOM_AUTO_2("Standard 2 Ball", ::autoMode2),
         CUSTOM_AUTO_5("Short 2 Ball", ::autoMode4),
         CUSTOM_AUTO_3("1 Ball", ::autoMode3),
-        CUSTOM_AUTO_4("Test Auto", ::testMode)
+        CUSTOM_AUTO_4("Test Auto", ::testMode),
+        CUSTOM_AUTO_9("Trajectory Test", ::autoMode8)
         ;
         companion object
         {
@@ -370,6 +375,8 @@ object Robot : FalconTimedRobot()
             add(Turn(90.degrees))
         }
 
+        trajectoryTest = PathPlanner.loadPath("Test Path", 8.0, 5.0)
+
     }
 
     /**
@@ -389,6 +396,7 @@ object Robot : FalconTimedRobot()
         autoPath1.currSegment = 0
         Climber.winchMotorRight.encoder.resetPosition(SIUnit(0.0))
         Shooter.angleEncoder.resetPosition(SIUnit(0.0))
+        trajectory = false
 
 
         /* This autonomousInit function (along with the initAutoChooser function) shows how to select
@@ -407,9 +415,11 @@ object Robot : FalconTimedRobot()
 
     /** This method is called periodically during autonomous.  */
     override fun autonomousPeriodic() {
-
-        auto.runPath(matchTimer)
-
+        if(!trajectory) {
+            auto.runPath(matchTimer)
+        } else {
+            Drive.followTrajectory(trajectoryTest)
+        }
 //        if(matchTimer.get() < 1.0) {
 //            Drive.curvatureDrive(.42, 0.0, false)
 //        } else {
@@ -449,6 +459,10 @@ object Robot : FalconTimedRobot()
 
     private fun autoMode7() {
         auto = autoPath7
+    }
+
+    private fun autoMode8() {
+        trajectory = true
     }
 
 

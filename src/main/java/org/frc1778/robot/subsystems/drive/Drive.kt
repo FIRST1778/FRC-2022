@@ -1,10 +1,12 @@
 package org.frc1778.robot.subsystems.drive
 
+import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.math.controller.RamseteController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation
 import org.frc1778.robot.Constants
 import org.frc1778.robot.subsystems.drive.commands.TeleopDriveCommand
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
@@ -15,14 +17,14 @@ import org.ghrobotics.lib.utils.Source
 
 object Drive : FalconWestCoastDrivetrain() {
 
-
+    private val navx: AHRS = AHRS()
 
     override val controller: RamseteController
         get() = RamseteController(2.0, 0.7)
 
 
     override val gyro: Source<Rotation2d>
-        get() = { Rotation2d() }
+        get() = { navx.rotation2d }
 
     override val kinematics: DifferentialDriveKinematics
         get() = DifferentialDriveKinematics(Constants.Drive.TRACK_WIDTH.value)
