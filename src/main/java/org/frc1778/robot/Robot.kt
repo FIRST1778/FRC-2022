@@ -36,6 +36,8 @@ object Robot : FalconTimedRobot()
     private val autoPath4 = Path()
     private val autoPath3 = Path()
     private val autoPath5 = Path()
+    private val autoPath6 = Path()
+    private val autoPath7 = Path()
     private val testAutoPath = Path()
     private lateinit var auto: Path
 
@@ -67,8 +69,10 @@ object Robot : FalconTimedRobot()
                                 val autoInitFunction: () -> Unit = {        },
                                 val periodicFunction: () -> Unit = { /* No op by default */ } )
     {
-        CUSTOM_AUTO_1("4 Ball?", ::autoMode1),
-        CUSTOM_AUTO_6("3 Ball", ::autoMode5),
+        CUSTOM_AUTO_1("4 Ball? Red", ::autoMode1),
+        CUSTOM_AUTO_8("4 Ball? Blue", ::autoMode7),
+        CUSTOM_AUTO_6("3 Ball Red", ::autoMode5),
+        CUSTOM_AUTO_7("3 Ball Blue", ::autoMode6),
         CUSTOM_AUTO_2("Standard 2 Ball", ::autoMode2),
         CUSTOM_AUTO_5("Short 2 Ball", ::autoMode4),
         CUSTOM_AUTO_3("1 Ball", ::autoMode3),
@@ -263,6 +267,105 @@ object Robot : FalconTimedRobot()
             add(ShooterOff)
         }
 
+        autoPath6.run {
+            add(CollectorDown)
+            add(Wait(.3))
+            add(CollectorOn)
+            add(Line(43.inches.value, 0.degrees))
+            add(Turn((-187).degrees))
+            add(Stop)
+//            add(Wait(.15))
+//            add(Aim)
+//            add(Stop)
+
+            //Shoot
+            add(CollectorOff)
+            add(ShooterOn)
+            add(Wait(.95))
+            add(LoaderOn)
+            add(Wait(.1))
+            add(LoaderOff)
+            add(Wait(.1))
+            add(CollectorOn)
+            add(Wait(.15))
+            add(LoaderOn)
+            add(Wait(.2))
+            add(LoaderOff)
+            add(ShooterOff)
+//
+            add(Line(105.inches.value, (-75).degrees))
+            add(Turn((115).degrees))
+            add(Stop)
+
+            add(Aim)
+            add(Stop)
+//
+//            //Shoot
+            add(CollectorOff)
+            add(ShooterOn)
+            add(Wait(.95))
+            add(LoaderOn)
+            add(Wait(.1))
+            add(LoaderOff)
+            add(Wait(.15))
+            add(ShooterOff)
+        }
+
+        autoPath7.run {
+            add(CollectorDown)
+            add(Wait(.3))
+            add(CollectorOn)
+            add(Line(43.inches.value, 0.degrees))
+            add(Turn((-187).degrees))
+            add(Stop)
+
+            //Shoot
+            add(CollectorOff)
+            add(ShooterOn)
+            add(Wait(.7))
+            add(LoaderOn)
+            add(Wait(.1))
+            add(LoaderOff)
+            add(Wait(.1))
+            add(CollectorOn)
+            add(Wait(.15))
+            add(LoaderOn)
+            add(Wait(.2))
+            add(LoaderOff)
+            add(ShooterOff)
+
+
+            add(FastLine(95.inches.value, (-73).degrees))
+            add(Stop)
+            add(Wait(.275))
+
+            add(FastLine(132.inches.value, (-35).degrees))
+            add(Stop)
+            add(Wait(.275))
+
+//            add(FastLine(120.inches.value, 170.degrees))
+//            add(Stop)
+//
+//            add(Wait(.15))
+//            add(Aim)
+//            add(Stop)
+//
+//            //Shoot
+//            add(CollectorOff)
+//            add(ShooterOn)
+//            add(Wait(.95))
+//            add(LoaderOn)
+//            add(Wait(.1))
+//            add(LoaderOff)
+//            add(Wait(.1))
+//            add(CollectorOn)
+//            add(Wait(.15))
+//            add(LoaderOn)
+//            add(Wait(.2))
+//            add(LoaderOff)
+//            add(ShooterOff)
+        }
+
         testAutoPath.run {
             add(Turn(90.degrees))
         }
@@ -307,6 +410,11 @@ object Robot : FalconTimedRobot()
 
         auto.runPath(matchTimer)
 
+//        if(matchTimer.get() < 1.0) {
+//            Drive.curvatureDrive(.42, 0.0, false)
+//        } else {
+//            Drive.stop()
+//        }
     }
 
     private fun autoMode1()
@@ -334,6 +442,15 @@ object Robot : FalconTimedRobot()
     private fun autoMode5() {
         auto = autoPath5
     }
+
+    private fun autoMode6() {
+        auto = autoPath6
+    }
+
+    private fun autoMode7() {
+        auto = autoPath7
+    }
+
 
     /** This method is called once when teleop is enabled.  */
     override fun teleopInit() {

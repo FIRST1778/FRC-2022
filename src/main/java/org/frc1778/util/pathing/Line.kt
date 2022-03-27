@@ -49,6 +49,7 @@ class Line(private var length: Double, private var angle: SIUnit<Radian>) : Path
     override fun initialize(cumulativeTime: Double) {
         turn = Turn(angle)
         turn.initialize(cumulativeTime)
+        turnComplete = false
         timeToComplete = turn.timeToComplete + (abs(length) / Constants.Drive.speed.value)
     }
 

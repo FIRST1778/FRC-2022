@@ -79,11 +79,11 @@ object Drive : FalconWestCoastDrivetrain() {
         }
 
         fun driveForwardsFast() {
-            curvatureDrive(.60, 0.0, false)
+            curvatureDrive(.42, 0.0, false)
         }
 
         fun driveBackwardsFast() {
-            curvatureDrive(-.60, 0.0, false)
+            curvatureDrive(-.42, 0.0, false)
         }
     }
 

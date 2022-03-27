@@ -44,6 +44,7 @@ class FastLine(private var length: Double, private var angle: SIUnit<Radian>) : 
     override fun initialize(cumulativeTime: Double) {
         turn = Turn(angle)
         turn.initialize(cumulativeTime)
+        turnComplete = false
         timeToComplete = turn.timeToComplete + (abs(length) / Constants.Drive.fastSpeed.value)
     }
 
