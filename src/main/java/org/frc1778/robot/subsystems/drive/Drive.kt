@@ -52,6 +52,12 @@ object Drive : FalconWestCoastDrivetrain() {
         motionProfileCruiseVelocity = SIUnit(1.0)
     }
 
+    fun drive(powers: Pair<Double, Double>) {
+        val (l , r) = powers
+        rightMotor
+
+    }
+
 
     fun resetEncoders() {
         rightMotor.encoder.resetPosition(SIUnit(0.0))
