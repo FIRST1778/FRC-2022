@@ -2,7 +2,9 @@ package org.frc1778.robot
 
 import com.pathplanner.lib.PathPlanner
 import edu.wpi.first.math.trajectory.Trajectory
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.frc1778.robot.subsystems.climber.Climber
@@ -15,10 +17,12 @@ import org.frc1778.util.pathing.Line
 import org.frc1778.util.pathing.Path
 import org.frc1778.util.pathing.Turn
 import org.frc1778.util.pathing.events.*
+import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
+import kotlin.contracts.contract
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -43,7 +47,17 @@ object Robot : FalconTimedRobot()
     private val testAutoPath = Path()
     private lateinit var auto: Path
     private lateinit var trajectoryTest: Trajectory
+    private lateinit var trajectoryCommand: FalconCommand
     private var trajectory = false
+
+    private val testPos = Constants.debugTab2
+        .add("Curr Angle", "")
+        .entry
+
+    private val currPos = Constants.debugTab2
+        .add("Curr Pos", "")
+        .entry
+
 
 
     init {
@@ -277,7 +291,7 @@ object Robot : FalconTimedRobot()
             add(Wait(.3))
             add(CollectorOn)
             add(Line(43.inches.value, 0.degrees))
-            add(Turn((-187).degrees))
+            add(Turn((-196).degrees))
             add(Stop)
 //            add(Wait(.15))
 //            add(Aim)
@@ -298,7 +312,7 @@ object Robot : FalconTimedRobot()
             add(LoaderOff)
             add(ShooterOff)
 //
-            add(Line(105.inches.value, (-75).degrees))
+            add(Line(105.inches.value, (-82).degrees))
             add(Turn((115).degrees))
             add(Stop)
 
@@ -375,7 +389,8 @@ object Robot : FalconTimedRobot()
             add(Turn(90.degrees))
         }
 
-        trajectoryTest = PathPlanner.loadPath("Test Path", 8.0, 5.0)
+        trajectoryTest = PathPlanner.loadPath("Test Path", 4.0, 2.5)
+
 
     }
 
@@ -397,6 +412,8 @@ object Robot : FalconTimedRobot()
         Climber.winchMotorRight.encoder.resetPosition(SIUnit(0.0))
         Shooter.angleEncoder.resetPosition(SIUnit(0.0))
         trajectory = false
+        Drive.resetYaw()
+        Drive.reset()
 
 
         /* This autonomousInit function (along with the initAutoChooser function) shows how to select
@@ -410,7 +427,13 @@ object Robot : FalconTimedRobot()
         println("Selected auto mode: ${selectedAutoMode.optionName}")
         selectedAutoMode.autoInitFunction.invoke()
 
-        auto.currSegment = 0
+        if(!trajectory) {
+            auto.currSegment = 0
+        } else {
+            trajectoryCommand = Drive.followTrajectory(PathPlanner.loadPath("Test Path", 8.0, 5.0))
+//            trajectoryCommand.initialize()
+        }
+
     }
 
     /** This method is called periodically during autonomous.  */
@@ -418,13 +441,9 @@ object Robot : FalconTimedRobot()
         if(!trajectory) {
             auto.runPath(matchTimer)
         } else {
-            Drive.followTrajectory(trajectoryTest)
+            trajectoryCommand.schedule()
+            testPos.setString(trajectoryTest.sample(matchTimer.get()).toString())
         }
-//        if(matchTimer.get() < 1.0) {
-//            Drive.curvatureDrive(.42, 0.0, false)
-//        } else {
-//            Drive.stop()
-//        }
     }
 
     private fun autoMode1()
@@ -470,13 +489,20 @@ object Robot : FalconTimedRobot()
     override fun teleopInit() {
         Drive.Autonomous.auto = false
         Shooter.setAngle(SIUnit(.0))
+        Drive.resetYaw()
+        Drive.reset()
 //        Climber.winchMotorRight.encoder.resetPosition(SIUnit(0.0))
         Collector.deployMotor.setPosition(SIUnit(0.0))
 
     }
 
     /** This method is called periodically during operator control.  */
-    override fun teleopPeriodic() {}
+    override fun teleopPeriodic() {
+        currPos.setString(Drive.robotPosition.toString())
+//        testPos.setString(Drive.gyro().toString())
+        testPos.setDouble(Drive.gyro().degrees)
+
+    }
 
     /** This method is called once when the robot is disabled.  */
     override fun disabledInit() {}
