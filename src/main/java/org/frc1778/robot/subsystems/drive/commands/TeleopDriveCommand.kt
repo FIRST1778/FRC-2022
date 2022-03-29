@@ -3,8 +3,10 @@ package org.frc1778.robot.subsystems.drive.commands
 import edu.wpi.first.networktables.NetworkTable
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
+import kotlin.math.tan
 import org.frc1778.robot.Constants
 import org.frc1778.robot.Controls
+import org.frc1778.util.DriveControl
 import org.frc1778.robot.subsystems.drive.Drive
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.wrappers.networktables.get
@@ -35,7 +37,6 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
 
 
 
-
     override fun execute() {
         Tx.setDouble(tx.getDouble(0.0))
         Ty.setDouble(ty.getDouble(0.0))
@@ -45,7 +46,8 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
 
         if(!Drive.Autonomous.auto) {
             if ((!limeSource() || ta.getDouble(0.0) < 0.0)) {
-                Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
+//                Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
+                DriveControl.calculateDrive(linearSource(), turnSource(), quickTurnSource())
             } else {
                 if(tx.getDouble(0.0) > if(distance > 135) 1.95 else 2.7) {
                     Drive.curvatureDrive(0.0, if(tx.getDouble(0.0) > if(distance > 135) 3.75 else 4.5) 0.085 else .02, true)
