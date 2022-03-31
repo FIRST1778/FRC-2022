@@ -25,7 +25,7 @@ object Constants {
         val fastSpeed = 80.inches // Faster Speed in inches/sec
         val rotSpeed = 185.degrees // Rotation speed in degrees/sec
 
-        val NATIVE_UNIT_MODEL = NativeUnitLengthModel(17000.nativeUnits, WHEEL_RADIUS)
+        val NATIVE_UNIT_MODEL = NativeUnitLengthModel(21077.nativeUnits, WHEEL_RADIUS)
     }
 
     object Shooter {

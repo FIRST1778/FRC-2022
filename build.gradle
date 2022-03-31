@@ -75,7 +75,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.10'
 
 
     implementation wpi.java.deps.wpilib()
@@ -96,7 +96,7 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     implementation "com.github.MTHSRoboticsClub:freezylib:-SNAPSHOT"
-    implementation 'com.github.gamingnight5965:FalconLibrary:2022.2.2'
+    implementation 'com.github.gamingnight5965:FalconLibrary:2022.4.1'
 
     implementation platform("org.junit:junit-bom:5.8.2")
     testImplementation "org.junit.jupiter:junit-jupiter-api"
