@@ -46,8 +46,8 @@ open class TeleopDriveCommand : FalconCommand(Drive) {
 
         if(!Drive.Autonomous.auto) {
             if ((!limeSource() || ta.getDouble(0.0) < 0.0)) {
-//                Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
-                DriveControl.calculateDrive(linearSource(), turnSource(), quickTurnSource())
+                Drive.curvatureDrive(linearSource(), turnSource(), quickTurnSource())
+//                DriveControl.calculateDrive(linearSource(), turnSource(), quickTurnSource())
             } else {
                 if(tx.getDouble(0.0) > if(distance > 135) 1.95 else 2.7) {
                     Drive.curvatureDrive(0.0, if(tx.getDouble(0.0) > if(distance > 135) 3.75 else 4.5) 0.085 else .02, true)

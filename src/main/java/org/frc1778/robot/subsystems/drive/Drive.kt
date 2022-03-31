@@ -7,24 +7,28 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.interfaces.Gyro
 import org.frc1778.robot.Constants
 import org.frc1778.robot.subsystems.drive.commands.TeleopDriveCommand
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
 import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.motors.ctre.falconFX
 import org.ghrobotics.lib.subsystems.drive.FalconWestCoastDrivetrain
 import org.ghrobotics.lib.utils.Source
 
 object Drive : FalconWestCoastDrivetrain() {
 
-    private val navx: AHRS = AHRS()
+    private var angleOffset: Double = 0.0
+
+    val navx: AHRS = AHRS()
 
     override val controller: RamseteController
         get() = RamseteController(2.0, 0.7)
 
 
-    override val gyro: Source<Rotation2d> = { navx.rotation2d }
+    override val gyro: Source<Rotation2d> = { Rotation2d(navx.rotation2d.radians + angleOffset) }
 
     override val kinematics: DifferentialDriveKinematics = DifferentialDriveKinematics(Constants.Drive.TRACK_WIDTH.value)
 
@@ -54,7 +58,8 @@ object Drive : FalconWestCoastDrivetrain() {
 
     fun drive(powers: Pair<Double, Double>) {
         val (l , r) = powers
-        rightMotor
+        rightMotor.setDutyCycle(r)
+        leftMotor.setDutyCycle(l)
 
     }
 
@@ -68,11 +73,12 @@ object Drive : FalconWestCoastDrivetrain() {
         navx.zeroYaw()
     }
 
-    fun reset() {
-        odometry = DifferentialDriveOdometry(gyro())
-        Drive.autoReset()
-        rightMotor.encoder.resetPosition(SIUnit(0.0))
-        leftMotor.encoder.resetPosition(SIUnit(0.0))
+    fun reset(pose: Pose2d = Pose2d()) {
+        this.angleOffset = pose.rotation.degrees.degrees.value
+        odometry.resetPosition(pose, pose.rotation)
+        robotPosition = pose
+        resetEncoders()
+        resetYaw()
     }
 
 
